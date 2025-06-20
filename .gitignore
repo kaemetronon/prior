@@ -1,0 +1,20 @@
+# Node.js
+node_modules/
+.env
+
+# Maven
+target/
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Logs
+logs/
+*.log
+
+# OS
+.DS_Store
