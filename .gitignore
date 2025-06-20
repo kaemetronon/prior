@@ -1,6 +1,5 @@
 # Node.js
 node_modules/
-.env
 
 # Maven
 target/
@@ -18,3 +17,6 @@ logs/
 
 # OS
 .DS_Store
+
+env/
+*.env
