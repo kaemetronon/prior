@@ -3,12 +3,12 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        REACT_APP_BACKEND_URL: http://158.160.38.188:8080/api
     image: priority-frontend:latest
     container_name: tasktracker-frontend
     ports:
       - "3000:3000"
-    env_file:
-      - ./env/frontend.env
     depends_on:
       - backend
 
