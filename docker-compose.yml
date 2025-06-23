@@ -3,6 +3,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+    image: priority-frontend:latest
     container_name: tasktracker-frontend
     ports:
       - "3000:3000"
@@ -15,6 +16,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    image: priority-backend:latest
     container_name: tasktracker-backend
     ports:
       - "8080:8080"
