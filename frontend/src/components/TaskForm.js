@@ -90,6 +90,21 @@ const TaskForm = ({ onSubmit, onClose }) => {
                 className="w-full"
               />
               <span className="text-sm text-gray-600">{formData.urgency}/10</span>
+              <details className="mt-1 text-xs text-gray-500">
+              <summary>хинт</summary>
+                <ul>
+                  <li>10 – нужно было сделать ещё вчера, максимум — сегодня же</li>
+                  <li>9 – сегодня до конца дня, иначе — последствия</li>
+                  <li>8 – завтра утром край, отложить нельзя</li>
+                  <li>7 – в течение ближайших 2–3 дней</li>
+                  <li>6 – желательно на этой неделе</li>
+                  <li>5 – неделя-другая, без жёсткого дедлайна</li>
+                  <li>4 – можно отложить до следующего месяца</li>
+                  <li>3 – не будет проблем, если сделать через месяц</li>
+                  <li>2 – сильно не срочно, когда-нибудь потом</li>
+                  <li>1 – вообще неважно когда, можно забыть</li>
+                </ul>
+              </details>
             </div>
 
             <div>
@@ -106,6 +121,21 @@ const TaskForm = ({ onSubmit, onClose }) => {
                 className="w-full"
               />
               <span className="text-sm text-gray-600">{formData.personalInterest}/10</span>
+              <details className="mt-1 text-xs text-gray-500">
+                <summary>хинт</summary>
+                <ul>
+                  <li>10 – вдохновляет: хочу сделать прямо сейчас</li>
+                  <li>9 – очень хочется сделать, вызывает азарт</li>
+                  <li>8 – нравится задача, приятная</li>
+                  <li>7 – делать можно, вызывает умеренный интерес</li>
+                  <li>6 – не вызывает эмоций, но не против</li>
+                  <li>5 – нейтрально, может быть скучно</li>
+                  <li>4 – немного отталкивает, откладываю</li>
+                  <li>3 – не хочется, делаю через силу</li>
+                  <li>2 – очень не хочется, вызывает раздражение</li>
+                  <li>1 – противно: ненавижу эту задачу</li>
+                </ul>
+              </details>
             </div>
 
             <div>
@@ -122,6 +152,21 @@ const TaskForm = ({ onSubmit, onClose }) => {
                 className="w-full"
               />
               <span className="text-sm text-gray-600">{formData.executionTime}/10</span>
+              <details className="mt-1 text-xs text-gray-500">
+                <summary>хинт</summary>
+                <ul>
+                  <li>10 – меньше 5 минут</li>
+                  <li>9 – 5–15 минут</li>
+                  <li>8 – до 30 минут</li>
+                  <li>7 – 30–60 минут</li>
+                  <li>6 – 1–2 часа</li>
+                  <li>5 – 2–3 часа</li>
+                  <li>4 – полдня</li>
+                  <li>3 – один рабочий день</li>
+                  <li>2 – несколько дней</li>
+                  <li>1 – неделя и больше</li>
+                </ul>
+              </details>
             </div>
 
             <div>
@@ -138,6 +183,21 @@ const TaskForm = ({ onSubmit, onClose }) => {
                 className="w-full"
               />
               <span className="text-sm text-gray-600">{formData.complexity}/10</span>
+              <details className="mt-1 text-xs text-gray-500">
+                <summary>хинт</summary>
+                <ul>
+                  <li>10 – всё предельно понятно и элементарно</li>
+                  <li>9 – понятно, но надо чуть подумать</li>
+                  <li>8 – есть пара неопределенностей, но в целом ясно</li>
+                  <li>7 – почти ясно, надо уточнить пару моментов</li>
+                  <li>6 – есть препятствия, нужно готовиться</li>
+                  <li>5 – требует размышлений и усилий</li>
+                  <li>4 – много неясного, сложно начать</li>
+                  <li>3 – почти не понимаю, как делать</li>
+                  <li>2 – очень туманно, чувствую тупик</li>
+                  <li>1 – полная неизвестность: вообще не знаю, с чего начать</li>
+                </ul>
+              </details>
             </div>
           </div>
 
