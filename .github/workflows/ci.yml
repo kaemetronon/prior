@@ -1,0 +1,21 @@
+name: Deploy via SSH
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to server via SSH
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ vars.PRIOR_HOST }}
+          username: ${{ vars.PRIOR_USER }}
+          key: ${{ secrets.PRIOR_SSH_SECRET }}
+          script: |
+            cd ~/prior
+            ./rebuild.sh
