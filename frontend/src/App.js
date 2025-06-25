@@ -31,6 +31,13 @@ function App() {
         <div className="flex justify-between items-center mb-8">
           <div className="flex items-center space-x-4">
             <button
+              onClick={() => window.location.reload()}
+              className="bg-white p-2 rounded-lg shadow hover:shadow-md transition-shadow"
+              title="Обновить страницу"
+            >
+              ⟳
+            </button>
+            <button
               onClick={() => handleDateChange(-1)}
               className="bg-white p-2 rounded-lg shadow hover:shadow-md transition-shadow"
             >
