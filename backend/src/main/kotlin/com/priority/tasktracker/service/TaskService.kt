@@ -7,6 +7,8 @@ import com.priority.tasktracker.repository.TaskRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
+import org.springframework.scheduling.annotation.Scheduled
+import java.time.ZoneId
 
 @Service
 @Transactional
@@ -17,7 +19,7 @@ class TaskService(
     fun getAllTasks(): List<Task> = taskRepository.findAll()
 
     fun getTasksByDate(date: LocalDate): List<Task> =
-        taskRepository.findAll().filter { it.date == date }
+        taskRepository.findByDate(date)
 
     fun getTaskById(id: Long): Task = taskRepository.findById(id)
         .orElseThrow { NoSuchElementException("Task not found with id: $id") }
@@ -66,5 +68,18 @@ class TaskService(
             throw NoSuchElementException("Task not found with id: $id")
         }
         taskRepository.deleteById(id)
+    }
+
+    @Scheduled(cron = "0 0 0 * * *", zone = "Europe/Moscow")
+    fun postponeOpenTasksToNextDay() {
+        val today = LocalDate.now(ZoneId.of("Europe/Moscow"))
+        val openTasks = taskRepository.findByCompletedAndDateBefore(false, today)
+        openTasks.forEach { task ->
+            val oldDate = task.date
+            task.date = today
+            val note = "[Перенесено с ${oldDate}]"
+            task.description = (task.description?.let { "$it\n$note" } ?: note)
+            taskRepository.save(task)
+        }
     }
 } 
