@@ -1,13 +1,14 @@
 package com.priority.tasktracker.service
 
+import com.priority.tasktracker.config.WithLogging
 import com.priority.tasktracker.model.Tag
 import com.priority.tasktracker.model.Task
 import com.priority.tasktracker.repository.TagRepository
 import com.priority.tasktracker.repository.TaskRepository
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
-import org.springframework.scheduling.annotation.Scheduled
 import java.time.ZoneId
 
 @Service
@@ -72,6 +73,7 @@ class TaskService(
 
     @Scheduled(cron = "0 0 0 * * *", zone = "Europe/Moscow")
     fun postponeOpenTasksToNextDay() {
+        logger.info("Move open tasks to next day")
         val today = LocalDate.now(ZoneId.of("Europe/Moscow"))
         val openTasks = taskRepository.findByCompletedAndDateBefore(false, today)
         openTasks.forEach { task ->
@@ -82,4 +84,6 @@ class TaskService(
             taskRepository.save(task)
         }
     }
+
+    companion object : WithLogging()
 } 
