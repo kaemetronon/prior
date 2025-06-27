@@ -36,6 +36,7 @@ class TaskController(private val taskService: TaskService) {
             personalInterest = taskDto.personalInterest,
             executionTime = taskDto.executionTime,
             complexity = taskDto.complexity,
+            concentration = taskDto.concentration,
             blocked = taskDto.blocked,
             completed = taskDto.completed
         )
@@ -52,6 +53,7 @@ class TaskController(private val taskService: TaskService) {
             personalInterest = taskDto.personalInterest,
             executionTime = taskDto.executionTime,
             complexity = taskDto.complexity,
+            concentration = taskDto.concentration,
             blocked = taskDto.blocked,
             completed = taskDto.completed
         )

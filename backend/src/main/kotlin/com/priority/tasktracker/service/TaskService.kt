@@ -42,6 +42,8 @@ class TaskService(
             if (executionTime > 10) executionTime = 10
             if (complexity < 1) complexity = 1
             if (complexity > 10) complexity = 10
+            if (concentration < 1) concentration = 1
+            if (concentration > 10) concentration = 10
         }
         return taskRepository.save(task)
     }
@@ -57,6 +59,7 @@ class TaskService(
             personalInterest = updatedTask.personalInterest.coerceIn(1, 10)
             executionTime = updatedTask.executionTime.coerceIn(1, 10)
             complexity = updatedTask.complexity.coerceIn(1, 10)
+            concentration = updatedTask.concentration.coerceIn(1, 10)
             blocked = updatedTask.blocked
             completed = updatedTask.completed
         }

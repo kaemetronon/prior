@@ -1,10 +1,6 @@
 import React, { useState } from 'react';
 import DeleteConfirmModal from './DeleteConfirmModal';
-
-const calculateTaskWeight = (task) => {
-  const { urgency, personalInterest, executionTime, complexity } = task;
-  return (urgency * 3.3 + personalInterest * 2 + executionTime * 3.2 + complexity * 1.5) / 10;
-};
+import { calculateTaskWeight } from '../utils/taskUtils';
 
 const getWeightColor = (weight) => {
   // Convert weight to a value between 0 and 1
@@ -18,14 +14,15 @@ const getWeightColor = (weight) => {
 };
 
 const Task = ({ task, onUpdateTask, onDeleteTask }) => {
-  const { id, title, description, tagNames, urgency, personalInterest, executionTime, complexity, blocked, completed } = task;
+  const { id, title, description, tagNames, urgency, personalInterest, executionTime, complexity, concentration, blocked, completed } = task;
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [editedParams, setEditedParams] = useState({
     urgency,
     personalInterest,
     executionTime,
-    complexity
+    complexity,
+    concentration
   });
   const [editedContent, setEditedContent] = useState({
     title,
@@ -167,7 +164,7 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
             ))}
           </div>
 
-          <div className="grid grid-cols-4 gap-2 text-sm mb-3">
+          <div className="grid grid-cols-5 gap-2 text-sm mb-3">
             <div className="flex flex-col">
               <span className="text-red-600 font-medium">Urgency:</span>
               {isEditing ? (
@@ -214,7 +211,7 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
               )}
             </div>
             <div className="flex flex-col">
-              <span className="text-purple-600 font-medium">Complexity:</span>
+              <span className="text-blue-600 font-medium">Complexity:</span>
               {isEditing ? (
                 <input
                   type="range"
@@ -226,6 +223,21 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
                 />
               ) : (
                 <span className="ml-1">{complexity}/10</span>
+              )}
+            </div>
+            <div className="flex flex-col">
+              <span className="text-purple-600 font-medium">Concentration:</span>
+              {isEditing ? (
+                <input
+                  type="range"
+                  min="1"
+                  max="10"
+                  value={editedParams.concentration}
+                  onChange={(e) => handleParamChange('concentration', e.target.value)}
+                  className="w-full"
+                />
+              ) : (
+                <span className="ml-1">{concentration}/10</span>
               )}
             </div>
           </div>

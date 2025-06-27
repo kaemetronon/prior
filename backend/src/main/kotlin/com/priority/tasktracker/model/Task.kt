@@ -40,6 +40,9 @@ data class Task(
     var complexity: Int = 3,
 
     @Column(nullable = false)
+    var concentration: Int = 3,
+
+    @Column(nullable = false)
     var blocked: Boolean = false,
 
     @Column(nullable = false)

@@ -14,6 +14,7 @@ data class TaskDto(
     val personalInterest: Int = 3,
     val executionTime: Int = 3,
     val complexity: Int = 3,
+    val concentration: Int = 3,
     val blocked: Boolean = false,
     val completed: Boolean = false
 ) {
@@ -28,6 +29,7 @@ data class TaskDto(
             personalInterest = task.personalInterest,
             executionTime = task.executionTime,
             complexity = task.complexity,
+            concentration = task.concentration,
             blocked = task.blocked,
             completed = task.completed
         )
