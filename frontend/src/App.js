@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useTasks } from './hooks/useTasks';
+import { useTasks, getLocalDateString } from './hooks/useTasks';
 import Task from './components/Task';
 import TaskForm from './components/TaskForm';
 import TaskList from './components/TaskList';
@@ -15,12 +15,10 @@ function App() {
   } = useTasks();
   const [showTaskForm, setShowTaskForm] = useState(false);
 
-  const { getMoscowDateString } = require('./hooks/useTasks');
-
   const handleDateChange = (days) => {
     const date = new Date(currentDate);
     date.setDate(date.getDate() + days);
-    changeDate(getMoscowDateString(date));
+    changeDate(getLocalDateString(date));
   };
 
   const handleAddTask = (taskData) => {
