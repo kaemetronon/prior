@@ -71,7 +71,7 @@ class TaskService(
         taskRepository.deleteById(id)
     }
 
-    @Scheduled(cron = "0 12 22 * * *", zone = "Europe/Moscow")
+    @Scheduled(cron = "0 0 0 * * *", zone = "Europe/Moscow")
     fun postponeOpenTasksToNextDay() {
         logger.info("Move open tasks to next day")
         val today = LocalDate.now(ZoneId.of("Europe/Moscow"))
