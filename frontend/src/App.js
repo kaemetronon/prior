@@ -15,10 +15,12 @@ function App() {
   } = useTasks();
   const [showTaskForm, setShowTaskForm] = useState(false);
 
+  const { getMoscowDateString } = require('./hooks/useTasks');
+
   const handleDateChange = (days) => {
-    const newDate = new Date(currentDate);
-    newDate.setDate(newDate.getDate() + days);
-    changeDate(newDate.toISOString().split('T')[0]);
+    const date = new Date(currentDate);
+    date.setDate(date.getDate() + days);
+    changeDate(getMoscowDateString(date));
   };
 
   const handleAddTask = (taskData) => {
@@ -43,7 +45,7 @@ function App() {
             >
               ←
             </button>
-            <h1 className="text-2xl font-bold text-gray-800">
+            <h1 className="text-2xl font-bold text-gray-800 w-[340px] text-center">
               {new Date(currentDate).toLocaleDateString('en-US', {
                 weekday: 'long',
                 year: 'numeric',

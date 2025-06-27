@@ -2,9 +2,15 @@ import { useState, useEffect } from 'react';
 import { sortTasks } from '../utils/taskUtils';
 import { backendUrl } from '../config';
 
+export function getMoscowDateString(date = new Date()) {
+  const utc = date.getTime() + (date.getTimezoneOffset() * 60000);
+  const msk = new Date(utc + 3 * 60 * 60000);
+  return msk.toISOString().split('T')[0];
+}
+
 export const useTasks = (initialDate) => {
   const [tasks, setTasks] = useState([]);
-  const [currentDate, setCurrentDate] = useState(initialDate || new Date().toISOString().split('T')[0]);
+  const [currentDate, setCurrentDate] = useState(initialDate || getMoscowDateString());
 
   useEffect(() => {
     fetch(`${backendUrl}/tasks/date/${currentDate}`)
