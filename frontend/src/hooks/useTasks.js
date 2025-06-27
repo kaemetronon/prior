@@ -2,15 +2,16 @@ import { useState, useEffect } from 'react';
 import { sortTasks } from '../utils/taskUtils';
 import { backendUrl } from '../config';
 
-export function getMoscowDateString(date = new Date()) {
-  const utc = date.getTime() + (date.getTimezoneOffset() * 60000);
-  const msk = new Date(utc + 3 * 60 * 60000);
-  return msk.toISOString().split('T')[0];
+export function getLocalDateString(date = new Date()) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
 
 export const useTasks = (initialDate) => {
   const [tasks, setTasks] = useState([]);
-  const [currentDate, setCurrentDate] = useState(initialDate || getMoscowDateString());
+  const [currentDate, setCurrentDate] = useState(initialDate || getLocalDateString());
 
   useEffect(() => {
     fetch(`${backendUrl}/tasks/date/${currentDate}`)
