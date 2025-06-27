@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import DeleteConfirmModal from './DeleteConfirmModal';
 import { calculateTaskWeight } from '../utils/taskUtils';
+import { HINTS } from '../constants/hints';
 
 const getWeightColor = (weight) => {
   // Convert weight to a value between 0 and 1
@@ -168,14 +169,23 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
             <div className="flex flex-col">
               <span className="text-red-600 font-medium">Urgency:</span>
               {isEditing ? (
-                <input
-                  type="range"
-                  min="1"
-                  max="10"
-                  value={editedParams.urgency}
-                  onChange={(e) => handleParamChange('urgency', e.target.value)}
-                  className="w-full"
-                />
+                <>
+                  <input
+                    type="range"
+                    min="1"
+                    max="10"
+                    value={editedParams.urgency}
+                    onChange={(e) => handleParamChange('urgency', e.target.value)}
+                    className="w-full"
+                  />
+                  <span className="text-sm text-gray-600">{editedParams.urgency}/10</span>
+                  <details className="mt-1 text-xs text-gray-500">
+                    <summary>хинт</summary>
+                    <ul>
+                      {HINTS.urgency.map((text, idx) => <li key={idx}>{text}</li>)}
+                    </ul>
+                  </details>
+                </>
               ) : (
                 <span className="ml-1">{urgency}/10</span>
               )}
@@ -183,14 +193,23 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
             <div className="flex flex-col">
               <span className="text-yellow-600 font-medium">Interest:</span>
               {isEditing ? (
-                <input
-                  type="range"
-                  min="1"
-                  max="10"
-                  value={editedParams.personalInterest}
-                  onChange={(e) => handleParamChange('personalInterest', e.target.value)}
-                  className="w-full"
-                />
+                <>
+                  <input
+                    type="range"
+                    min="1"
+                    max="10"
+                    value={editedParams.personalInterest}
+                    onChange={(e) => handleParamChange('personalInterest', e.target.value)}
+                    className="w-full"
+                  />
+                  <span className="text-sm text-gray-600">{editedParams.personalInterest}/10</span>
+                  <details className="mt-1 text-xs text-gray-500">
+                    <summary>хинт</summary>
+                    <ul>
+                      {HINTS.personalInterest.map((text, idx) => <li key={idx}>{text}</li>)}
+                    </ul>
+                  </details>
+                </>
               ) : (
                 <span className="ml-1">{personalInterest}/10</span>
               )}
@@ -198,14 +217,23 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
             <div className="flex flex-col">
               <span className="text-green-600 font-medium">Time:</span>
               {isEditing ? (
-                <input
-                  type="range"
-                  min="1"
-                  max="10"
-                  value={editedParams.executionTime}
-                  onChange={(e) => handleParamChange('executionTime', e.target.value)}
-                  className="w-full"
-                />
+                <>
+                  <input
+                    type="range"
+                    min="1"
+                    max="10"
+                    value={editedParams.executionTime}
+                    onChange={(e) => handleParamChange('executionTime', e.target.value)}
+                    className="w-full"
+                  />
+                  <span className="text-sm text-gray-600">{editedParams.executionTime}/10</span>
+                  <details className="mt-1 text-xs text-gray-500">
+                    <summary>хинт</summary>
+                    <ul>
+                      {HINTS.executionTime.map((text, idx) => <li key={idx}>{text}</li>)}
+                    </ul>
+                  </details>
+                </>
               ) : (
                 <span className="ml-1">{executionTime}/10</span>
               )}
@@ -213,14 +241,32 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
             <div className="flex flex-col">
               <span className="text-blue-600 font-medium">Complexity:</span>
               {isEditing ? (
-                <input
-                  type="range"
-                  min="1"
-                  max="10"
-                  value={editedParams.complexity}
-                  onChange={(e) => handleParamChange('complexity', e.target.value)}
-                  className="w-full"
-                />
+                <>
+                  <input
+                    type="range"
+                    min="1"
+                    max="10"
+                    value={editedParams.complexity}
+                    onChange={(e) => handleParamChange('complexity', e.target.value)}
+                    className="w-full"
+                  />
+                  <span className="text-sm text-gray-600">{editedParams.complexity}/10</span>
+                  <details className="mt-1 text-xs text-gray-500">
+                    <summary>хинт</summary>
+                    <ul>
+                      <li>10 – всё предельно понятно и элементарно</li>
+                      <li>9 – понятно, но надо чуть подумать</li>
+                      <li>8 – есть пара неопределённостей, но в целом ясно</li>
+                      <li>7 – почти ясно, надо уточнить пару моментов</li>
+                      <li>6 – есть препятствия, нужно готовиться</li>
+                      <li>5 – требует размышлений и усилий</li>
+                      <li>4 – много неясного, сложно начать</li>
+                      <li>3 – почти не понимаю, как делать</li>
+                      <li>2 – очень туманно, чувствую тупик</li>
+                      <li>1 – полная неизвестность, не знаю с чего начать</li>
+                    </ul>
+                  </details>
+                </>
               ) : (
                 <span className="ml-1">{complexity}/10</span>
               )}
@@ -228,14 +274,32 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
             <div className="flex flex-col">
               <span className="text-purple-600 font-medium">Concentration:</span>
               {isEditing ? (
-                <input
-                  type="range"
-                  min="1"
-                  max="10"
-                  value={editedParams.concentration}
-                  onChange={(e) => handleParamChange('concentration', e.target.value)}
-                  className="w-full"
-                />
+                <>
+                  <input
+                    type="range"
+                    min="1"
+                    max="10"
+                    value={editedParams.concentration}
+                    onChange={(e) => handleParamChange('concentration', e.target.value)}
+                    className="w-full"
+                  />
+                  <span className="text-sm text-gray-600">{editedParams.concentration}/10</span>
+                  <details className="mt-1 text-xs text-gray-500">
+                    <summary>хинт</summary>
+                    <ul>
+                      <li>1 – максимальная концентрация, полное погружение</li>
+                      <li>2 – очень высокая концентрация</li>
+                      <li>3 – высокая концентрация</li>
+                      <li>4 – средне-высокая концентрация</li>
+                      <li>5 – средняя концентрация</li>
+                      <li>6 – ниже среднего</li>
+                      <li>7 – можно выполнять на фоне других дел</li>
+                      <li>8 – почти не требует концентрации</li>
+                      <li>9 – минимальная концентрация</li>
+                      <li>10 – не требует концентрации, полностью фоновая активность</li>
+                    </ul>
+                  </details>
+                </>
               ) : (
                 <span className="ml-1">{concentration}/10</span>
               )}

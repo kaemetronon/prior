@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { HINTS } from '../constants/hints';
 
 const TaskForm = ({ onSubmit, onClose }) => {
   const [formData, setFormData] = useState({
@@ -94,16 +95,7 @@ const TaskForm = ({ onSubmit, onClose }) => {
               <details className="mt-1 text-xs text-gray-500">
                 <summary>хинт</summary>
                 <ul>
-                  <li>10 – нужно было сделать ещё вчера</li>
-                  <li>9 – сегодня до конца дня</li>
-                  <li>8 – завтра утром край</li>
-                  <li>7 – в течение 2–3 дней</li>
-                  <li>6 – желательно на этой неделе</li>
-                  <li>5 – неделя-другая, без жёсткого дедлайна</li>
-                  <li>4 – можно отложить до следующего месяца</li>
-                  <li>3 – через месяц — не проблема</li>
-                  <li>2 – когда-нибудь потом</li>
-                  <li>1 – неважно когда, можно забыть</li>
+                  {HINTS.urgency.map((text, idx) => <li key={idx}>{text}</li>)}
                 </ul>
               </details>
             </div>
@@ -125,16 +117,7 @@ const TaskForm = ({ onSubmit, onClose }) => {
               <details className="mt-1 text-xs text-gray-500">
                 <summary>хинт</summary>
                 <ul>
-                  <li>10 – вдохновляет: хочу сделать прямо сейчас</li>
-                  <li>9 – очень хочется сделать, вызывает азарт</li>
-                  <li>8 – нравится задача, приятная</li>
-                  <li>7 – делать можно, умеренный интерес</li>
-                  <li>6 – не вызывает эмоций, но не против</li>
-                  <li>5 – нейтрально, может быть скучно</li>
-                  <li>4 – немного отталкивает, откладываю</li>
-                  <li>3 – не хочется, делаю через силу</li>
-                  <li>2 – очень не хочется, вызывает раздражение</li>
-                  <li>1 – не хочу</li>
+                  {HINTS.personalInterest.map((text, idx) => <li key={idx}>{text}</li>)}
                 </ul>
               </details>
             </div>
@@ -156,16 +139,7 @@ const TaskForm = ({ onSubmit, onClose }) => {
               <details className="mt-1 text-xs text-gray-500">
                 <summary>хинт</summary>
                 <ul>
-                  <li>10 – меньше 5 минут</li>
-                  <li>9 – 5–15 минут</li>
-                  <li>8 – до 30 минут</li>
-                  <li>7 – 30–60 минут</li>
-                  <li>6 – 1–2 часа</li>
-                  <li>5 – 2–3 часа</li>
-                  <li>4 – полдня</li>
-                  <li>3 – один рабочий день</li>
-                  <li>2 – несколько дней</li>
-                  <li>1 – неделя и больше</li>
+                  {HINTS.executionTime.map((text, idx) => <li key={idx}>{text}</li>)}
                 </ul>
               </details>
             </div>
@@ -187,16 +161,7 @@ const TaskForm = ({ onSubmit, onClose }) => {
               <details className="mt-1 text-xs text-gray-500">
                 <summary>хинт</summary>
                 <ul>
-                  <li>10 – всё предельно понятно и элементарно</li>
-                  <li>9 – понятно, но надо чуть подумать</li>
-                  <li>8 – есть пара неопределённостей, но в целом ясно</li>
-                  <li>7 – почти ясно, надо уточнить пару моментов</li>
-                  <li>6 – есть препятствия, нужно готовиться</li>
-                  <li>5 – требует размышлений и усилий</li>
-                  <li>4 – много неясного, сложно начать</li>
-                  <li>3 – почти не понимаю, как делать</li>
-                  <li>2 – очень туманно, чувствую тупик</li>
-                  <li>1 – полная неизвестность, не знаю с чего начать</li>
+                  {HINTS.complexity.map((text, idx) => <li key={idx}>{text}</li>)}
                 </ul>
               </details>
             </div>
@@ -218,16 +183,7 @@ const TaskForm = ({ onSubmit, onClose }) => {
               <details className="mt-1 text-xs text-gray-500">
                 <summary>хинт</summary>
                 <ul>
-                  <li>1 – максимальная концентрация, полное погружение</li>
-                  <li>2 – очень высокая концентрация</li>
-                  <li>3 – высокая концентрация</li>
-                  <li>4 – средне-высокая концентрация</li>
-                  <li>5 – средняя концентрация</li>
-                  <li>6 – ниже среднего</li>
-                  <li>7 – можно выполнять на фоне других дел</li>
-                  <li>8 – почти не требует концентрации</li>
-                  <li>9 – минимальная концентрация</li>
-                  <li>10 – не требует концентрации, полностью фоновая активность</li>
+                  {HINTS.concentration.map((text, idx) => <li key={idx}>{text}</li>)}
                 </ul>
               </details>
             </div>
