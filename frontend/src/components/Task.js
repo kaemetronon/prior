@@ -143,21 +143,203 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
             )}
           </div>
           
-          {isEditing ? (
-            <textarea
-              value={editedContent.description}
-              onChange={(e) => handleContentChange('description', e.target.value)}
-              className="text-gray-600 mb-2 sm:mb-3 bg-gray-50 border border-gray-300 rounded px-1.5 sm:px-2 py-1 w-full resize-none text-sm sm:text-base"
-              placeholder="Task description"
-              rows="3"
-            />
-          ) : (
-            <p className={`text-gray-600 mb-2 sm:mb-3 text-sm sm:text-base ${completed ? 'line-through text-gray-400' : ''}`}>
-              {description}
-            </p>
-          )}
+          <div className="sm:hidden mb-2">
+            <details className="text-sm">
+              <summary className="text-blue-600 hover:text-blue-800 cursor-pointer">
+                Подробнее
+              </summary>
+              <div className="mt-2">
+                <div>
+                  {isEditing ? (
+                    <textarea
+                      value={editedContent.description}
+                      onChange={(e) => handleContentChange('description', e.target.value)}
+                      className="text-gray-600 mb-2 bg-gray-50 border border-gray-300 rounded px-1.5 py-1 w-full resize-none text-sm"
+                      placeholder="Task description"
+                      rows="3"
+                    />
+                  ) : (
+                    <p className={`text-gray-600 mb-2 text-sm ${completed ? 'line-through text-gray-400' : ''}`}>
+                      {description}
+                    </p>
+                  )}
+                </div>
+                
+                <div className="flex flex-wrap gap-1 mb-2">
+                  {tagNames.map((tag, index) => (
+                    <span
+                      key={index}
+                      className="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-0.5 rounded"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+
+                <div className="grid grid-cols-1 gap-3 text-xs mb-2">
+                  <div className="flex flex-col">
+                    <span className="text-red-600 font-medium text-sm">Urgency:</span>
+                    {isEditing ? (
+                      <>
+                        <input
+                          type="range"
+                          min="1"
+                          max="10"
+                          value={editedParams.urgency}
+                          onChange={(e) => handleParamChange('urgency', e.target.value)}
+                          className="w-full h-6"
+                        />
+                        <span className="text-xs text-gray-600">{editedParams.urgency}/10</span>
+                        <details className="mt-1 text-xs text-gray-500">
+                          <summary>хинт</summary>
+                          <ul>
+                            {HINTS.urgency.map((text, idx) => <li key={idx}>{text}</li>)}
+                          </ul>
+                        </details>
+                      </>
+                    ) : (
+                      <span className="ml-1">{urgency}/10</span>
+                    )}
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-yellow-600 font-medium text-sm">Interest:</span>
+                    {isEditing ? (
+                      <>
+                        <input
+                          type="range"
+                          min="1"
+                          max="10"
+                          value={editedParams.personalInterest}
+                          onChange={(e) => handleParamChange('personalInterest', e.target.value)}
+                          className="w-full h-6"
+                        />
+                        <span className="text-xs text-gray-600">{editedParams.personalInterest}/10</span>
+                        <details className="mt-1 text-xs text-gray-500">
+                          <summary>хинт</summary>
+                          <ul>
+                            {HINTS.personalInterest.map((text, idx) => <li key={idx}>{text}</li>)}
+                          </ul>
+                        </details>
+                      </>
+                    ) : (
+                      <span className="ml-1">{personalInterest}/10</span>
+                    )}
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-green-600 font-medium text-sm">Time:</span>
+                    {isEditing ? (
+                      <>
+                        <input
+                          type="range"
+                          min="1"
+                          max="10"
+                          value={editedParams.executionTime}
+                          onChange={(e) => handleParamChange('executionTime', e.target.value)}
+                          className="w-full h-6"
+                        />
+                        <span className="text-xs text-gray-600">{editedParams.executionTime}/10</span>
+                        <details className="mt-1 text-xs text-gray-500">
+                          <summary>хинт</summary>
+                          <ul>
+                            {HINTS.executionTime.map((text, idx) => <li key={idx}>{text}</li>)}
+                          </ul>
+                        </details>
+                      </>
+                    ) : (
+                      <span className="ml-1">{executionTime}/10</span>
+                    )}
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-blue-600 font-medium text-sm">Complexity:</span>
+                    {isEditing ? (
+                      <>
+                        <input
+                          type="range"
+                          min="1"
+                          max="10"
+                          value={editedParams.complexity}
+                          onChange={(e) => handleParamChange('complexity', e.target.value)}
+                          className="w-full h-6"
+                        />
+                        <span className="text-xs text-gray-600">{editedParams.complexity}/10</span>
+                        <details className="mt-1 text-xs text-gray-500">
+                          <summary>хинт</summary>
+                          <ul>
+                            {HINTS.complexity.map((text, idx) => <li key={idx}>{text}</li>)}
+                          </ul>
+                        </details>
+                      </>
+                    ) : (
+                      <span className="ml-1">{complexity}/10</span>
+                    )}
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-purple-600 font-medium text-sm">Concentration:</span>
+                    {isEditing ? (
+                      <>
+                        <input
+                          type="range"
+                          min="1"
+                          max="10"
+                          value={editedParams.concentration}
+                          onChange={(e) => handleParamChange('concentration', e.target.value)}
+                          className="w-full h-6"
+                        />
+                        <span className="text-xs text-gray-600">{editedParams.concentration}/10</span>
+                        <details className="mt-1 text-xs text-gray-500">
+                          <summary>хинт</summary>
+                          <ul>
+                            {HINTS.concentration.map((text, idx) => <li key={idx}>{text}</li>)}
+                          </ul>
+                        </details>
+                      </>
+                    ) : (
+                      <span className="ml-1">{concentration}/10</span>
+                    )}
+                  </div>
+                </div>
+
+                {isEditing && (
+                  <div className="flex justify-end mb-2">
+                    <button
+                      onClick={handleSave}
+                      className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1.5 rounded text-sm"
+                    >
+                      Save Changes
+                    </button>
+                  </div>
+                )}
+
+                <div className="flex items-center gap-2 border-t pt-2">
+                  <input
+                    type="checkbox"
+                    checked={blocked}
+                    onChange={handleToggleBlocked}
+                    className="h-4 w-4 rounded border-gray-300 text-red-600 focus:ring-red-500"
+                  />
+                  <span className="text-sm text-gray-600">Blocked</span>
+                </div>
+              </div>
+            </details>
+          </div>
+
+          <div className="hidden sm:block">
+            {isEditing ? (
+              <textarea
+                value={editedContent.description}
+                onChange={(e) => handleContentChange('description', e.target.value)}
+                className="text-gray-600 mb-2 sm:mb-3 bg-gray-50 border border-gray-300 rounded px-1.5 sm:px-2 py-1 w-full resize-none text-sm sm:text-base"
+                placeholder="Task description"
+                rows="3"
+              />
+            ) : (
+              <p className={`text-gray-600 mb-2 sm:mb-3 text-sm sm:text-base ${completed ? 'line-through text-gray-400' : ''}`}>
+                {description}
+              </p>
+            )}
+          </div>
           
-          <div className="flex flex-wrap gap-1 sm:gap-2 mb-2 sm:mb-3">
+          <div className="hidden sm:flex flex-wrap gap-1 sm:gap-2 mb-2 sm:mb-3">
             {tagNames.map((tag, index) => (
               <span
                 key={index}
@@ -168,7 +350,7 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
             ))}
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-5 gap-3 sm:gap-2 text-xs sm:text-sm mb-2 sm:mb-3">
+          <div className="hidden sm:grid grid-cols-1 sm:grid-cols-5 gap-3 sm:gap-2 text-xs sm:text-sm mb-2 sm:mb-3">
             <div className="flex flex-col">
               <span className="text-red-600 font-medium text-sm sm:text-base">Urgency:</span>
               {isEditing ? (
@@ -292,17 +474,17 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
           </div>
 
           {isEditing && (
-            <div className="flex justify-end mb-2 sm:mb-3">
+            <div className="hidden sm:flex justify-end mb-2 sm:mb-3">
               <button
                 onClick={handleSave}
-                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1.5 sm:px-6 sm:py-2 rounded text-sm sm:text-base"
+                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1.5 rounded text-sm sm:text-base"
               >
                 Save Changes
               </button>
             </div>
           )}
 
-          <div className="flex items-center gap-2 sm:gap-3 border-t pt-2 sm:pt-3">
+          <div className="hidden sm:flex items-center gap-2 sm:gap-3 border-t pt-2 sm:pt-3">
             <input
               type="checkbox"
               checked={blocked}
