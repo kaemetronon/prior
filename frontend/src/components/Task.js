@@ -109,19 +109,6 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
             >
               Weight: {weight.toFixed(1)}
             </span>
-            {isEditing ? (
-              <input
-                type="text"
-                value={editedContent.title}
-                onChange={(e) => handleContentChange('title', e.target.value)}
-                className="text-base sm:text-lg font-semibold text-gray-800 bg-gray-50 border border-gray-300 rounded px-1.5 sm:px-2 py-1 flex-1 min-w-0"
-                placeholder="Task title"
-              />
-            ) : (
-              <h3 className={`text-base sm:text-lg font-semibold text-gray-800 ${completed ? 'line-through text-gray-500' : ''} flex-1 min-w-0`}>
-                {title}
-              </h3>
-            )}
             <div className="flex gap-1 sm:gap-2 ml-auto flex-shrink-0">
               <button
                 onClick={() => setIsEditing(!isEditing)}
@@ -138,6 +125,22 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
                 🗑️
               </button>
             </div>
+          </div>
+          
+          <div className="mb-2">
+            {isEditing ? (
+              <input
+                type="text"
+                value={editedContent.title}
+                onChange={(e) => handleContentChange('title', e.target.value)}
+                className="text-base sm:text-lg font-semibold text-gray-800 bg-gray-50 border border-gray-300 rounded px-1.5 sm:px-2 py-1 w-full min-w-0"
+                placeholder="Task title"
+              />
+            ) : (
+              <h3 className={`text-base sm:text-lg font-semibold text-gray-800 ${completed ? 'line-through text-gray-500' : ''} w-full`}>
+                {title}
+              </h3>
+            )}
           </div>
           
           {isEditing ? (
