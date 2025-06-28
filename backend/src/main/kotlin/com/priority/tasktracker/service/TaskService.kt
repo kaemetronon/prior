@@ -84,6 +84,7 @@ class TaskService(
             task.date = today
             val note = "[Перенесено с ${oldDate}]"
             task.description = (task.description?.let { "$it\n$note" } ?: note)
+            logger.info("${task.title} $note")
             taskRepository.save(task)
         }
     }
