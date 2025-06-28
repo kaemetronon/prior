@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { HINTS } from '../constants/hints';
 
 const TaskForm = ({ onSubmit, onClose }) => {
@@ -13,6 +13,20 @@ const TaskForm = ({ onSubmit, onClose }) => {
     concentration: 3,
     blocked: false
   });
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [onClose]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
