@@ -26,23 +26,23 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <div className="container mx-auto px-4 py-4 sm:py-8">
-        <div className="flex flex-col sm:flex-row justify-between items-center mb-6 sm:mb-8 gap-4">
-          <div className="flex items-center space-x-2 sm:space-x-4 w-full sm:w-auto">
+      <div className="container mx-auto px-2 sm:px-4 py-3 sm:py-8">
+        <div className="flex flex-col sm:flex-row justify-between items-center mb-4 sm:mb-8 gap-3 sm:gap-4">
+          <div className="flex items-center space-x-1 sm:space-x-4 w-full sm:w-auto">
             <button
               onClick={() => window.location.reload()}
-              className="bg-white p-3 sm:p-2 rounded-lg shadow hover:shadow-md transition-shadow text-lg sm:text-base"
+              className="bg-white p-2 sm:p-2 rounded-lg shadow hover:shadow-md transition-shadow text-base sm:text-base"
               title="Обновить страницу"
             >
               ⟳
             </button>
             <button
               onClick={() => handleDateChange(-1)}
-              className="bg-white p-3 sm:p-2 rounded-lg shadow hover:shadow-md transition-shadow text-lg sm:text-base"
+              className="bg-white p-2 sm:p-2 rounded-lg shadow hover:shadow-md transition-shadow text-base sm:text-base"
             >
               ←
             </button>
-            <h1 className="text-lg sm:text-2xl font-bold text-gray-800 flex-1 sm:w-auto text-center px-2">
+            <h1 className="text-sm sm:text-2xl font-bold text-gray-800 flex-1 sm:w-auto text-center px-1 sm:px-2">
               {new Date(currentDate).toLocaleDateString('en-US', {
                 weekday: 'long',
                 year: 'numeric',
@@ -52,20 +52,20 @@ function App() {
             </h1>
             <button
               onClick={() => handleDateChange(1)}
-              className="bg-white p-3 sm:p-2 rounded-lg shadow hover:shadow-md transition-shadow text-lg sm:text-base"
+              className="bg-white p-2 sm:p-2 rounded-lg shadow hover:shadow-md transition-shadow text-base sm:text-base"
             >
               →
             </button>
           </div>
           <button
             onClick={() => setShowTaskForm(true)}
-            className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 sm:px-4 sm:py-2 rounded-lg shadow hover:shadow-md transition-shadow text-base sm:text-sm font-medium w-full sm:w-auto"
+            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 sm:px-4 sm:py-2 rounded-lg shadow hover:shadow-md transition-shadow text-sm sm:text-sm font-medium w-full sm:w-auto"
           >
             Add Task
           </button>
         </div>
 
-        <div className="grid gap-4">
+        <div className="grid gap-3 sm:gap-4">
           <TaskList
             tasks={tasks}
             onUpdateTask={updateTask}
