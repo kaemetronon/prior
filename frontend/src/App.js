@@ -42,14 +42,16 @@ function App() {
             >
               ←
             </button>
-            <h1 className="text-sm sm:text-2xl font-bold text-gray-800 flex-1 sm:w-auto text-center px-1 sm:px-2">
-              {new Date(currentDate).toLocaleDateString('en-US', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              })}
-            </h1>
+            <div className="flex-1 sm:flex-none sm:w-80 text-center px-1 sm:px-2">
+              <h1 className="text-sm sm:text-2xl font-bold text-gray-800">
+                {new Date(currentDate).toLocaleDateString('en-US', {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })}
+              </h1>
+            </div>
             <button
               onClick={() => handleDateChange(1)}
               className="bg-white p-2 sm:p-2 rounded-lg shadow hover:shadow-md transition-shadow text-base sm:text-base"
