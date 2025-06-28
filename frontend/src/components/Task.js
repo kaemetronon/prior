@@ -122,17 +122,17 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
                 {title}
               </h3>
             )}
-            <div className="flex gap-1 ml-auto">
+            <div className="flex gap-2 sm:gap-1 ml-auto">
               <button
                 onClick={() => setIsEditing(!isEditing)}
-                className="text-sm px-2 py-1 rounded hover:bg-gray-100 transition-colors"
+                className="text-base sm:text-sm px-3 py-2 sm:px-2 sm:py-1 rounded hover:bg-gray-100 transition-colors"
                 title={isEditing ? "Cancel editing" : "Edit task"}
               >
                 {isEditing ? '✕' : '✏️'}
               </button>
               <button
                 onClick={handleDeleteClick}
-                className="text-sm px-2 py-1 rounded hover:bg-red-100 text-red-600 transition-colors"
+                className="text-base sm:text-sm px-3 py-2 sm:px-2 sm:py-1 rounded hover:bg-red-100 text-red-600 transition-colors"
                 title="Delete task"
               >
                 🗑️
@@ -165,9 +165,9 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
             ))}
           </div>
 
-          <div className="grid grid-cols-5 gap-2 text-sm mb-3">
+          <div className="grid grid-cols-1 sm:grid-cols-5 gap-4 sm:gap-2 text-sm mb-3">
             <div className="flex flex-col">
-              <span className="text-red-600 font-medium">Urgency:</span>
+              <span className="text-red-600 font-medium text-base sm:text-sm">Urgency:</span>
               {isEditing ? (
                 <>
                   <input
@@ -176,7 +176,7 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
                     max="10"
                     value={editedParams.urgency}
                     onChange={(e) => handleParamChange('urgency', e.target.value)}
-                    className="w-full"
+                    className="w-full h-8 sm:h-6"
                   />
                   <span className="text-sm text-gray-600">{editedParams.urgency}/10</span>
                   <details className="mt-1 text-xs text-gray-500">
@@ -191,7 +191,7 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
               )}
             </div>
             <div className="flex flex-col">
-              <span className="text-yellow-600 font-medium">Interest:</span>
+              <span className="text-yellow-600 font-medium text-base sm:text-sm">Interest:</span>
               {isEditing ? (
                 <>
                   <input
@@ -200,7 +200,7 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
                     max="10"
                     value={editedParams.personalInterest}
                     onChange={(e) => handleParamChange('personalInterest', e.target.value)}
-                    className="w-full"
+                    className="w-full h-8 sm:h-6"
                   />
                   <span className="text-sm text-gray-600">{editedParams.personalInterest}/10</span>
                   <details className="mt-1 text-xs text-gray-500">
@@ -215,7 +215,7 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
               )}
             </div>
             <div className="flex flex-col">
-              <span className="text-green-600 font-medium">Time:</span>
+              <span className="text-green-600 font-medium text-base sm:text-sm">Time:</span>
               {isEditing ? (
                 <>
                   <input
@@ -224,7 +224,7 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
                     max="10"
                     value={editedParams.executionTime}
                     onChange={(e) => handleParamChange('executionTime', e.target.value)}
-                    className="w-full"
+                    className="w-full h-8 sm:h-6"
                   />
                   <span className="text-sm text-gray-600">{editedParams.executionTime}/10</span>
                   <details className="mt-1 text-xs text-gray-500">
@@ -239,7 +239,7 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
               )}
             </div>
             <div className="flex flex-col">
-              <span className="text-blue-600 font-medium">Complexity:</span>
+              <span className="text-blue-600 font-medium text-base sm:text-sm">Complexity:</span>
               {isEditing ? (
                 <>
                   <input
@@ -248,7 +248,7 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
                     max="10"
                     value={editedParams.complexity}
                     onChange={(e) => handleParamChange('complexity', e.target.value)}
-                    className="w-full"
+                    className="w-full h-8 sm:h-6"
                   />
                   <span className="text-sm text-gray-600">{editedParams.complexity}/10</span>
                   <details className="mt-1 text-xs text-gray-500">
@@ -263,7 +263,7 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
               )}
             </div>
             <div className="flex flex-col">
-              <span className="text-purple-600 font-medium">Concentration:</span>
+              <span className="text-purple-600 font-medium text-base sm:text-sm">Concentration:</span>
               {isEditing ? (
                 <>
                   <input
@@ -272,7 +272,7 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
                     max="10"
                     value={editedParams.concentration}
                     onChange={(e) => handleParamChange('concentration', e.target.value)}
-                    className="w-full"
+                    className="w-full h-8 sm:h-6"
                   />
                   <span className="text-sm text-gray-600">{editedParams.concentration}/10</span>
                   <details className="mt-1 text-xs text-gray-500">
@@ -292,21 +292,21 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
             <div className="flex justify-end mb-3">
               <button
                 onClick={handleSave}
-                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded text-sm"
+                className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 sm:px-4 sm:py-1 rounded text-base sm:text-sm"
               >
                 Save Changes
               </button>
             </div>
           )}
 
-          <div className="flex items-center gap-2 border-t pt-2">
+          <div className="flex items-center gap-3 sm:gap-2 border-t pt-3 sm:pt-2">
             <input
               type="checkbox"
               checked={blocked}
               onChange={handleToggleBlocked}
-              className="h-4 w-4 rounded border-gray-300 text-red-600 focus:ring-red-500"
+              className="h-5 w-5 sm:h-4 sm:w-4 rounded border-gray-300 text-red-600 focus:ring-red-500"
             />
-            <span className="text-sm text-gray-600">Blocked</span>
+            <span className="text-base sm:text-sm text-gray-600">Blocked</span>
           </div>
         </div>
       </div>
