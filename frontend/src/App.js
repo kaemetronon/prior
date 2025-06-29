@@ -1,9 +1,14 @@
 import React, { useState } from 'react';
 import { useTasks, getLocalDateString } from './hooks/useTasks';
+import { useAuth } from './hooks/useAuth';
 import TaskForm from './components/TaskForm';
 import TaskList from './components/TaskList';
+import LoginForm from './components/LoginForm';
 
 function App() {
+  const { isAuthenticated, login, logout, getAuthHeaders } = useAuth();
+  const [showTaskForm, setShowTaskForm] = useState(false);
+
   const { 
     tasks, 
     currentDate, 
@@ -11,8 +16,7 @@ function App() {
     updateTask,
     deleteTask,
     changeDate
-  } = useTasks();
-  const [showTaskForm, setShowTaskForm] = useState(false);
+  } = useTasks(null, getAuthHeaders, isAuthenticated);
 
   const handleDateChange = (days) => {
     const date = new Date(currentDate);
@@ -20,9 +24,39 @@ function App() {
     changeDate(getLocalDateString(date));
   };
 
-  const handleAddTask = (taskData) => {
-    addTask(taskData);
+  const handleAddTask = async (taskData) => {
+    try {
+      await addTask(taskData);
+    } catch (error) {
+      if (error.message === 'Unauthorized') {
+        logout();
+      }
+    }
   };
+
+  const handleUpdateTask = async (taskId, taskData) => {
+    try {
+      await updateTask(taskId, taskData);
+    } catch (error) {
+      if (error.message === 'Unauthorized') {
+        logout();
+      }
+    }
+  };
+
+  const handleDeleteTask = async (taskId) => {
+    try {
+      await deleteTask(taskId);
+    } catch (error) {
+      if (error.message === 'Unauthorized') {
+        logout();
+      }
+    }
+  };
+
+  if (!isAuthenticated) {
+    return <LoginForm onLogin={login} />;
+  }
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -59,19 +93,27 @@ function App() {
               →
             </button>
           </div>
-          <button
-            onClick={() => setShowTaskForm(true)}
-            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 sm:px-4 sm:py-2 rounded-lg shadow hover:shadow-md transition-shadow text-sm sm:text-sm font-medium w-full sm:w-auto"
-          >
-            Add Task
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setShowTaskForm(true)}
+              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 sm:px-4 sm:py-2 rounded-lg shadow hover:shadow-md transition-shadow text-sm sm:text-sm font-medium"
+            >
+              Add Task
+            </button>
+            <button
+              onClick={logout}
+              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 sm:px-4 sm:py-2 rounded-lg shadow hover:shadow-md transition-shadow text-sm sm:text-sm font-medium"
+            >
+              Выйти
+            </button>
+          </div>
         </div>
 
         <div className="grid gap-3 sm:gap-4">
           <TaskList
             tasks={tasks}
-            onUpdateTask={updateTask}
-            onDeleteTask={deleteTask}
+            onUpdateTask={handleUpdateTask}
+            onDeleteTask={handleDeleteTask}
           />
           {tasks.length === 0 && (
             <div className="text-center text-gray-500 py-8">

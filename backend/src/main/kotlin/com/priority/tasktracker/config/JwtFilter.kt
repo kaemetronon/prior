@@ -17,6 +17,11 @@ class JwtFilter(
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
+        if (request.method == "OPTIONS") {
+            filterChain.doFilter(request, response)
+            return
+        }
+        
         if (request.requestURI == "/api/token/generate") {
             filterChain.doFilter(request, response)
             return

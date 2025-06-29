@@ -1,5 +1,6 @@
 package com.priority.tasktracker.controller
 
+import com.priority.tasktracker.dto.PwdDto
 import com.priority.tasktracker.service.JwtService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.ResponseEntity
@@ -17,8 +18,8 @@ class TokenController(
 ) {
 
     @PostMapping("/generate")
-    fun generateToken(@RequestBody pwd: String): ResponseEntity<Map<String, String>> {
-        if (appPwd != pwd) {
+    fun generateToken(@RequestBody pwd: PwdDto): ResponseEntity<Map<String, String>> {
+        if (appPwd != pwd.pwd) {
             return ResponseEntity.internalServerError().build()
         }
         val token = jwtService.generateToken()
