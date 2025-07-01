@@ -21,29 +21,34 @@ class JwtFilter(
             filterChain.doFilter(request, response)
             return
         }
-        
+
         if (request.requestURI == "/api/token/generate") {
             filterChain.doFilter(request, response)
             return
         }
-        
+
         val authHeader = request.getHeader("Authorization")
-        
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Missing or invalid Authorization header")
             return
         }
 
-        try {
+        runCatching {
             val jwt = authHeader.substring(7)
-            
             if (jwtService.isTokenValid(jwt)) {
                 filterChain.doFilter(request, response)
             } else {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid token")
+                    .also { logger.error("Invalid token: [$jwt]") }
             }
-        } catch (_: Exception) {
+        }
+        try {
+
+        } catch (ex: Exception) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token validation failed")
+                .also { logger.error("Token validation failed:  ${ex.message}") }
         }
     }
+
+    companion object : WithLogging()
 }

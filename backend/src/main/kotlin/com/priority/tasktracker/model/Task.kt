@@ -10,10 +10,10 @@ data class Task(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 256)
     var title: String,
 
-    @Column
+    @Column(length = 256)
     var description: String? = null,
 
     @Column(nullable = false)
