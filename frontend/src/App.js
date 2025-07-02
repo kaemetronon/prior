@@ -6,17 +6,21 @@ import TaskList from './components/TaskList';
 import LoginForm from './components/LoginForm';
 
 function App() {
-  const { isAuthenticated, login, logout, getAuthHeaders } = useAuth();
+  const { isAuthenticated, login, logout, token, clearAuth } = useAuth();
   const [showTaskForm, setShowTaskForm] = useState(false);
 
-  const { 
-    tasks, 
-    currentDate, 
-    addTask, 
+  const {
+    tasks,
+    currentDate,
+    addTask,
     updateTask,
     deleteTask,
     changeDate
-  } = useTasks(null, getAuthHeaders, isAuthenticated);
+  } = useTasks(null, token, clearAuth);
+
+  if (!isAuthenticated) {
+    return <LoginForm onLogin={login} />;
+  }
 
   const handleDateChange = (days) => {
     const date = new Date(currentDate);
@@ -25,38 +29,16 @@ function App() {
   };
 
   const handleAddTask = async (taskData) => {
-    try {
-      await addTask(taskData);
-    } catch (error) {
-      if (error.message === 'Unauthorized') {
-        logout();
-      }
-    }
+    await addTask(taskData);
   };
 
   const handleUpdateTask = async (taskId, taskData) => {
-    try {
-      await updateTask(taskId, taskData);
-    } catch (error) {
-      if (error.message === 'Unauthorized') {
-        logout();
-      }
-    }
+    await updateTask(taskId, taskData);
   };
 
   const handleDeleteTask = async (taskId) => {
-    try {
-      await deleteTask(taskId);
-    } catch (error) {
-      if (error.message === 'Unauthorized') {
-        logout();
-      }
-    }
+    await deleteTask(taskId);
   };
-
-  if (!isAuthenticated) {
-    return <LoginForm onLogin={login} />;
-  }
 
   return (
     <div className="min-h-screen bg-gray-100">

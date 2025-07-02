@@ -18,6 +18,12 @@ export const useAuth = () => {
     setIsAuthenticated(false);
   };
 
+  const clearAuth = useCallback(() => {
+    localStorage.removeItem(TOKEN_KEY);
+    setToken(null);
+    setIsAuthenticated(false);
+  }, []);
+
   const getAuthHeaders = useCallback(() => {
     if (!token) return {};
     return {
@@ -40,5 +46,6 @@ export const useAuth = () => {
     login,
     logout,
     getAuthHeaders,
+    clearAuth,
   };
 }; 
