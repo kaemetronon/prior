@@ -1,4 +1,4 @@
-package com.priority.tasktracker.model
+package com.priority.tasktracker.task.data
 
 import jakarta.persistence.*
 import java.time.LocalDate

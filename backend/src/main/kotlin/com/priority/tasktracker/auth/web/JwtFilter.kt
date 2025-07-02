@@ -1,6 +1,7 @@
-package com.priority.tasktracker.config
+package com.priority.tasktracker.auth.web
 
-import com.priority.tasktracker.service.JwtService
+import com.priority.tasktracker.auth.domain.JwtService
+import com.priority.tasktracker.utils.WithLogging
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse

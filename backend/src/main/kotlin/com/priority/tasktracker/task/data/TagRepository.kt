@@ -1,6 +1,5 @@
-package com.priority.tasktracker.repository
+package com.priority.tasktracker.task.data
 
-import com.priority.tasktracker.model.Tag
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 

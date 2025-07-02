@@ -1,8 +1,8 @@
-package com.priority.tasktracker.controller
+package com.priority.tasktracker.task.web
 
-import com.priority.tasktracker.dto.TaskDto
-import com.priority.tasktracker.model.Task
-import com.priority.tasktracker.service.TaskService
+import com.priority.tasktracker.task.domain.TaskDto
+import com.priority.tasktracker.task.data.Task
+import com.priority.tasktracker.task.domain.TaskService
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*

@@ -1,10 +1,10 @@
-package com.priority.tasktracker.service
+package com.priority.tasktracker.task.domain
 
-import com.priority.tasktracker.config.WithLogging
-import com.priority.tasktracker.model.Tag
-import com.priority.tasktracker.model.Task
-import com.priority.tasktracker.repository.TagRepository
-import com.priority.tasktracker.repository.TaskRepository
+import com.priority.tasktracker.task.data.Tag
+import com.priority.tasktracker.task.data.Task
+import com.priority.tasktracker.task.data.TagRepository
+import com.priority.tasktracker.task.data.TaskRepository
+import com.priority.tasktracker.utils.WithLogging
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -90,4 +90,4 @@ class TaskService(
     }
 
     companion object : WithLogging()
-} 
+}

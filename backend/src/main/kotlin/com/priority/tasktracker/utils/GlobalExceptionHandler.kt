@@ -1,4 +1,4 @@
-package com.priority.tasktracker.config
+package com.priority.tasktracker.utils
 
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.ControllerAdvice
@@ -18,4 +18,4 @@ class GlobalExceptionHandler {
     }
 
     companion object : WithLogging()
-} 
+}

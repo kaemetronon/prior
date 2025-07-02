@@ -1,5 +1,6 @@
-package com.priority.tasktracker.config
+package com.priority.tasktracker.auth.config
 
+import com.priority.tasktracker.auth.web.JwtFilter
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.web.servlet.FilterRegistrationBean
 import org.springframework.context.annotation.Bean
@@ -31,4 +32,4 @@ class WebConfig : WebMvcConfigurer {
             .allowCredentials(true)
             .maxAge(3600)
     }
-} 
+}

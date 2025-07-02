@@ -1,4 +1,4 @@
-package com.priority.tasktracker.service
+package com.priority.tasktracker.auth.domain
 
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
@@ -7,7 +7,7 @@ import io.jsonwebtoken.security.Keys
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.security.Key
-import java.util.*
+import java.util.Date
 
 @Service
 class JwtService(
@@ -47,4 +47,4 @@ class JwtService(
         val keyBytes = Decoders.BASE64.decode(secretKey)
         return Keys.hmacShaKeyFor(keyBytes)
     }
-} 
+}

@@ -1,4 +1,4 @@
-package com.priority.tasktracker.config
+package com.priority.tasktracker.utils
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory

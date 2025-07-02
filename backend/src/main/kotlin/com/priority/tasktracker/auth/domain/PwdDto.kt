@@ -1,4 +1,4 @@
-package com.priority.tasktracker.dto
+package com.priority.tasktracker.auth.domain
 
 import com.fasterxml.jackson.annotation.JsonProperty
 

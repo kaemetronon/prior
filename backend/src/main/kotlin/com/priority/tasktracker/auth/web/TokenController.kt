@@ -1,7 +1,7 @@
-package com.priority.tasktracker.controller
+package com.priority.tasktracker.auth.web
 
-import com.priority.tasktracker.dto.PwdDto
-import com.priority.tasktracker.service.JwtService
+import com.priority.tasktracker.auth.domain.PwdDto
+import com.priority.tasktracker.auth.domain.JwtService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
@@ -25,4 +25,4 @@ class TokenController(
         val token = jwtService.generateToken()
         return ResponseEntity.ok(mapOf("token" to token))
     }
-} 
+}

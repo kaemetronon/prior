@@ -1,7 +1,7 @@
-package com.priority.tasktracker.dto
+package com.priority.tasktracker.task.domain
 
-import com.priority.tasktracker.model.Task
-import com.priority.tasktracker.model.Tag
+import com.priority.tasktracker.task.data.Task
+import com.priority.tasktracker.task.data.Tag
 import java.time.LocalDate
 
 data class TaskDto(
