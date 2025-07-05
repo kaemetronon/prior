@@ -1,6 +1,6 @@
 package com.priority.tasktracker.task.domain
 
-import com.priority.tasktracker.task.data.Tag
+import com.priority.tasktracker.task.data.TagDto
 import com.priority.tasktracker.task.data.Task
 import com.priority.tasktracker.task.data.TagRepository
 import com.priority.tasktracker.task.data.TaskRepository
@@ -25,14 +25,13 @@ class TaskService(
     fun getTaskById(id: Long): Task = taskRepository.findById(id)
         .orElseThrow { NoSuchElementException("Task not found with id: $id") }
 
-    private fun getOrCreateTags(tagNames: Set<String>): Set<Tag> {
+    private fun getOrCreateTags(tagNames: Set<String>): Set<TagDto> {
         return tagNames.map { name ->
-            tagRepository.findByName(name) ?: tagRepository.save(Tag(name = name))
+            tagRepository.findByName(name) ?: tagRepository.save(TagDto(name = name))
         }.toSet()
     }
 
     fun createTask(task: Task): Task {
-        // Ensure default values are set
         task.apply {
             if (urgency < 1) urgency = 1
             if (urgency > 10) urgency = 10
@@ -45,6 +44,22 @@ class TaskService(
             if (concentration < 1) concentration = 1
             if (concentration > 10) concentration = 10
         }
+        return taskRepository.save(task)
+    }
+
+    fun createQuickTask(title: String): Task {
+        val task = Task(
+            title = title,
+            description = null,
+            date = LocalDate.now(),
+            urgency = 10,
+            personalInterest = 10,
+            executionTime = 10,
+            complexity = 10,
+            concentration = 10,
+            blocked = false,
+            completed = false
+        )
         return taskRepository.save(task)
     }
 

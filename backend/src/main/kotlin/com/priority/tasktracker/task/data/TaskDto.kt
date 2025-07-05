@@ -25,7 +25,7 @@ data class Task(
         joinColumns = [JoinColumn(name = "task_id")],
         inverseJoinColumns = [JoinColumn(name = "tag_id")]
     )
-    val tags: MutableSet<Tag> = mutableSetOf(),
+    val tags: MutableSet<TagDto> = mutableSetOf(),
 
     @Column(nullable = false)
     var urgency: Int = 3,

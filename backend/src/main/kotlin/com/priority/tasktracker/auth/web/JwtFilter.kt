@@ -13,7 +13,9 @@ import org.springframework.web.filter.OncePerRequestFilter
 class JwtFilter(
     private val jwtService: JwtService,
     @Value("\${app.cors.allowed-origins}")
-    private val allowedOrigins: String
+    private val allowedOrigins: String,
+    @Value("\${app.api-token}")
+    private val apiToken: String
 ) : OncePerRequestFilter() {
 
     override fun doFilterInternal(
@@ -39,21 +41,19 @@ class JwtFilter(
         }
 
         runCatching {
-            val jwt = authHeader.substring(7)
-            if (jwtService.isTokenValid(jwt)) {
+            val token = authHeader.substring(7)
+            if (token == apiToken) {
+                filterChain.doFilter(request, response)
+                return
+            }
+
+            if (jwtService.isTokenValid(token)) {
                 filterChain.doFilter(request, response)
             } else {
                 setCorsHeaders(response)
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid token")
-                    .also { logger.error("Invalid token: [$jwt]") }
+                    .also { logger.error("Invalid token: [$token]") }
             }
-        }
-        try {
-
-        } catch (ex: Exception) {
-            setCorsHeaders(response)
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token validation failed")
-                .also { logger.error("Token validation failed:  ${ex.message}") }
         }
     }
 

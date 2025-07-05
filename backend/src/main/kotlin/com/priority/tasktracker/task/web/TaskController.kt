@@ -1,8 +1,9 @@
 package com.priority.tasktracker.task.web
 
-import com.priority.tasktracker.task.domain.TaskDto
 import com.priority.tasktracker.task.data.Task
 import com.priority.tasktracker.task.domain.TaskService
+import com.priority.tasktracker.task.domain.model.QuickTaskRequest
+import com.priority.tasktracker.task.domain.model.TaskDto
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -41,6 +42,12 @@ class TaskController(private val taskService: TaskService) {
             completed = taskDto.completed
         )
         return ResponseEntity.ok(TaskDto.fromEntity(taskService.createTask(task)))
+    }
+
+    @PostMapping("/quick")
+    fun createQuickTask(@RequestBody request: QuickTaskRequest): ResponseEntity<TaskDto> {
+        val task = taskService.createQuickTask(request.title)
+        return ResponseEntity.ok(TaskDto.fromEntity(task))
     }
 
     @PutMapping("/{id}")

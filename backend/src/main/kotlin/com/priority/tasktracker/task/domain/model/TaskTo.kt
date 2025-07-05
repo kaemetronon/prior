@@ -1,7 +1,6 @@
-package com.priority.tasktracker.task.domain
+package com.priority.tasktracker.task.domain.model
 
 import com.priority.tasktracker.task.data.Task
-import com.priority.tasktracker.task.data.Tag
 import java.time.LocalDate
 
 data class TaskDto(
@@ -32,18 +31,6 @@ data class TaskDto(
             concentration = task.concentration,
             blocked = task.blocked,
             completed = task.completed
-        )
-    }
-}
-
-data class TagDto(
-    val id: Long? = null,
-    val name: String
-) {
-    companion object {
-        fun fromEntity(tag: Tag) = TagDto(
-            id = tag.id,
-            name = tag.name
         )
     }
 }
