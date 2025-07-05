@@ -51,7 +51,7 @@ class TaskService(
         val task = Task(
             title = title,
             description = null,
-            date = LocalDate.now(),
+            date = LocalDate.now(ZoneId.of("Europe/Moscow")),
             urgency = 10,
             personalInterest = 10,
             executionTime = 10,
