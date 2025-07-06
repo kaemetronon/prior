@@ -40,7 +40,7 @@ class TaskController(private val taskService: TaskService) {
     @PostMapping("/quick/llm")
     fun createQuickLlmTask(@RequestBody request: QuickTaskRequest): ResponseEntity<TaskTo> =
         ResponseEntity.ok(
-            taskService.createQuickLlmTask(request.title).toTaskTo()
+            taskService.createQuickLlmTask(request.title)?.toTaskTo()
         )
 
     @PutMapping("/{id}")

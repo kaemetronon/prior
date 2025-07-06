@@ -1,9 +1,11 @@
 package com.priority.tasktracker.task.domain
 
+import com.priority.tasktracker.llm.LlmService
 import com.priority.tasktracker.task.data.TagDto
 import com.priority.tasktracker.task.data.TagRepository
 import com.priority.tasktracker.task.data.TaskRepository
 import com.priority.tasktracker.task.domain.model.Task
+import com.priority.tasktracker.utils.DateUtils.Companion.mskLocalDate
 import com.priority.tasktracker.utils.WithLogging
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
@@ -13,7 +15,8 @@ import java.time.ZoneId
 @Service
 class TaskService(
     private val taskRepository: TaskRepository,
-    private val tagRepository: TagRepository
+    private val tagRepository: TagRepository,
+    private val llmService: LlmService
 ) {
     fun getAllTasks(): List<Task> =
         taskRepository.findAll().map { it.toTask() }
@@ -63,21 +66,11 @@ class TaskService(
         return taskRepository.save(task.toTaskDto()).toTask()
     }
 
-    fun createQuickLlmTask(title: String): Task {
-        return Task(
-            id = null,
-            title = title,
-            description = null,
-            date = LocalDate.now(ZoneId.of("Europe/Moscow")),
-            tags = emptySet(),
-            urgency = 10,
-            personalInterest = 10,
-            executionTime = 10,
-            complexity = 10,
-            concentration = 10,
-            blocked = false,
-            completed = false
-        )
+    fun createQuickLlmTask(title: String): Task? {
+        val tasksContext = getTasksByDate(mskLocalDate())
+        return llmService.createTask(title, tasksContext)?.let {
+            createTask(it)
+        }
     }
 
     fun updateTask(updatedTask: Task): Task {
@@ -109,17 +102,17 @@ class TaskService(
     @Scheduled(cron = "0 0 0 * * *", zone = "Europe/Moscow")
     fun postponeOpenTasksToNextDay() {
         logger.info("Move open tasks to next day")
-        val today = LocalDate.now(ZoneId.of("Europe/Moscow"))
-        val openTasks = taskRepository.findByCompletedAndDateBefore(false, today)
+        val openTasks = taskRepository.findByCompletedAndDateBefore(false, mskLocalDate())
         openTasks.forEach { task ->
             val oldDate = task.date
-            task.date = today
+            task.date = mskLocalDate()
             val note = "[Перенесено с ${oldDate}]"
             task.description = (task.description?.let { "$it\n$note" } ?: note)
             logger.info("${task.title} $note")
             taskRepository.save(task)
         }
     }
+
 
     companion object : WithLogging()
 }

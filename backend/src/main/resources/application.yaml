@@ -1,0 +1,31 @@
+spring:
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+app:
+  cors:
+    allowed-origins: ${CORS_ORIGINS}
+  pwd: ${APP_PWD}
+  api-token: ${API_TOKEN}
+
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: 86400000
+
+ya:
+  iam-token: ${YA_IAM_TOKEN}
+  auth-host: https://iam.api.cloud.yandex.net/iam/v1/tokens
+  host: https://llm.api.cloud.yandex.net/foundationModels/v1/completion
+  folder-id: ${YA_FOLDER_ID}
+  model: /yandexgpt/rc
+  # model: /yandexgpt-lite/latest
+  # model: /yandexgpt-32k/latest
+  # model: /llama/latest
