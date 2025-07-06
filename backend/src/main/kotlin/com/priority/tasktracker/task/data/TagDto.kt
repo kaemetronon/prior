@@ -13,5 +13,5 @@ data class TagDto(
     var name: String,
 
     @ManyToMany(mappedBy = "tags")
-    val tasks: MutableSet<Task> = mutableSetOf()
+    val tasks: MutableSet<TaskDto> = mutableSetOf()
 ) 

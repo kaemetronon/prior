@@ -5,7 +5,7 @@ import org.springframework.stereotype.Repository
 import java.time.LocalDate
 
 @Repository
-interface TaskRepository : JpaRepository<Task, Long> {
-    fun findByDate(date: LocalDate): List<Task>
-    fun findByCompletedAndDateBefore(completed: Boolean, date: LocalDate): List<Task>
+interface TaskRepository : JpaRepository<TaskDto, Long> {
+    fun findByDate(date: LocalDate): List<TaskDto>
+    fun findByCompletedAndDateBefore(completed: Boolean, date: LocalDate): List<TaskDto>
 } 

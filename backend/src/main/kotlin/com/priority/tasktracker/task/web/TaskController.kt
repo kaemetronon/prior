@@ -1,9 +1,7 @@
 package com.priority.tasktracker.task.web
 
-import com.priority.tasktracker.task.data.Task
 import com.priority.tasktracker.task.domain.TaskService
 import com.priority.tasktracker.task.domain.model.QuickTaskRequest
-import com.priority.tasktracker.task.domain.model.TaskDto
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -14,58 +12,42 @@ import java.time.LocalDate
 class TaskController(private val taskService: TaskService) {
 
     @GetMapping
-    fun getAllTasks(): ResponseEntity<List<TaskDto>> =
-        ResponseEntity.ok(taskService.getAllTasks().map { TaskDto.fromEntity(it) })
+    fun getAllTasks(): ResponseEntity<List<TaskTo>> =
+        ResponseEntity.ok(taskService.getAllTasks().map { it.toTaskTo() })
 
     @GetMapping("/date/{date}")
     fun getTasksByDate(
         @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) date: LocalDate
-    ): ResponseEntity<List<TaskDto>> =
-        ResponseEntity.ok(taskService.getTasksByDate(date).map { TaskDto.fromEntity(it) })
+    ): ResponseEntity<List<TaskTo>> =
+        ResponseEntity.ok(taskService.getTasksByDate(date).map { it.toTaskTo() })
 
     @GetMapping("/{id}")
-    fun getTaskById(@PathVariable id: Long): ResponseEntity<TaskDto> =
-        ResponseEntity.ok(TaskDto.fromEntity(taskService.getTaskById(id)))
+    fun getTaskById(@PathVariable id: Long): ResponseEntity<TaskTo> =
+        ResponseEntity.ok(taskService.getTaskById(id).toTaskTo())
 
     @PostMapping
-    fun createTask(@RequestBody taskDto: TaskDto): ResponseEntity<TaskDto> {
-        val task = Task(
-            title = taskDto.title,
-            description = taskDto.description,
-            date = taskDto.date,
-            urgency = taskDto.urgency,
-            personalInterest = taskDto.personalInterest,
-            executionTime = taskDto.executionTime,
-            complexity = taskDto.complexity,
-            concentration = taskDto.concentration,
-            blocked = taskDto.blocked,
-            completed = taskDto.completed
+    fun createTask(@RequestBody task: TaskTo): ResponseEntity<TaskTo> =
+        ResponseEntity.ok(
+            taskService.createTask(task.toTask()).toTaskTo()
         )
-        return ResponseEntity.ok(TaskDto.fromEntity(taskService.createTask(task)))
-    }
 
     @PostMapping("/quick")
-    fun createQuickTask(@RequestBody request: QuickTaskRequest): ResponseEntity<TaskDto> {
-        val task = taskService.createQuickTask(request.title)
-        return ResponseEntity.ok(TaskDto.fromEntity(task))
-    }
+    fun createQuickTask(@RequestBody request: QuickTaskRequest): ResponseEntity<TaskTo> =
+        ResponseEntity.ok(
+            taskService.createQuickTask(request.title).toTaskTo()
+        )
+
+    @PostMapping("/quick/llm")
+    fun createQuickLlmTask(@RequestBody request: QuickTaskRequest): ResponseEntity<TaskTo> =
+        ResponseEntity.ok(
+            taskService.createQuickLlmTask(request.title).toTaskTo()
+        )
 
     @PutMapping("/{id}")
-    fun updateTask(@PathVariable id: Long, @RequestBody taskDto: TaskDto): ResponseEntity<TaskDto> {
-        val task = Task(
-            title = taskDto.title,
-            description = taskDto.description,
-            date = taskDto.date,
-            urgency = taskDto.urgency,
-            personalInterest = taskDto.personalInterest,
-            executionTime = taskDto.executionTime,
-            complexity = taskDto.complexity,
-            concentration = taskDto.concentration,
-            blocked = taskDto.blocked,
-            completed = taskDto.completed
+    fun updateTask(@PathVariable id: Long, @RequestBody taskDto: TaskTo): ResponseEntity<TaskTo> =
+        ResponseEntity.ok(
+            taskService.updateTask(taskDto.toTask(id)).toTaskTo()
         )
-        return ResponseEntity.ok(TaskDto.fromEntity(taskService.updateTask(id, task)))
-    }
 
     @DeleteMapping("/{id}")
     fun deleteTask(@PathVariable id: Long): ResponseEntity<Unit> {

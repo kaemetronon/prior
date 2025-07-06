@@ -5,7 +5,7 @@ import java.time.LocalDate
 
 @Entity
 @Table(name = "tasks")
-data class Task(
+data class TaskDto(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,

@@ -1,28 +1,27 @@
 package com.priority.tasktracker.task.domain
 
 import com.priority.tasktracker.task.data.TagDto
-import com.priority.tasktracker.task.data.Task
 import com.priority.tasktracker.task.data.TagRepository
 import com.priority.tasktracker.task.data.TaskRepository
+import com.priority.tasktracker.task.domain.model.Task
 import com.priority.tasktracker.utils.WithLogging
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
 import java.time.ZoneId
 
 @Service
-@Transactional
 class TaskService(
     private val taskRepository: TaskRepository,
     private val tagRepository: TagRepository
 ) {
-    fun getAllTasks(): List<Task> = taskRepository.findAll()
+    fun getAllTasks(): List<Task> =
+        taskRepository.findAll().map { it.toTask() }
 
     fun getTasksByDate(date: LocalDate): List<Task> =
-        taskRepository.findByDate(date)
+        taskRepository.findByDate(date).map { it.toTask() }
 
-    fun getTaskById(id: Long): Task = taskRepository.findById(id)
+    fun getTaskById(id: Long): Task = taskRepository.findById(id).map { it.toTask() }
         .orElseThrow { NoSuchElementException("Task not found with id: $id") }
 
     private fun getOrCreateTags(tagNames: Set<String>): Set<TagDto> {
@@ -31,27 +30,28 @@ class TaskService(
         }.toSet()
     }
 
-    fun createTask(task: Task): Task {
+    fun createTask(task: Task): Task =
+        taskRepository.save(
+            applyEdgeParams(task).toTaskDto()
+        ).toTask()
+
+    private fun applyEdgeParams(task: Task): Task =
         task.apply {
-            if (urgency < 1) urgency = 1
-            if (urgency > 10) urgency = 10
-            if (personalInterest < 1) personalInterest = 1
-            if (personalInterest > 10) personalInterest = 10
-            if (executionTime < 1) executionTime = 1
-            if (executionTime > 10) executionTime = 10
-            if (complexity < 1) complexity = 1
-            if (complexity > 10) complexity = 10
-            if (concentration < 1) concentration = 1
-            if (concentration > 10) concentration = 10
+            urgency = urgency.coerceIn(1, 10)
+            personalInterest = personalInterest.coerceIn(1, 10)
+            executionTime = executionTime.coerceIn(1, 10)
+            complexity = complexity.coerceIn(1, 10)
+            concentration = concentration.coerceIn(1, 10)
         }
-        return taskRepository.save(task)
-    }
+
 
     fun createQuickTask(title: String): Task {
         val task = Task(
+            id = null,
             title = title,
             description = null,
             date = LocalDate.now(ZoneId.of("Europe/Moscow")),
+            tags = emptySet(),
             urgency = 10,
             personalInterest = 10,
             executionTime = 10,
@@ -60,11 +60,28 @@ class TaskService(
             blocked = false,
             completed = false
         )
-        return taskRepository.save(task)
+        return taskRepository.save(task.toTaskDto()).toTask()
     }
 
-    fun updateTask(id: Long, updatedTask: Task): Task {
-        val existingTask = getTaskById(id)
+    fun createQuickLlmTask(title: String): Task {
+        return Task(
+            id = null,
+            title = title,
+            description = null,
+            date = LocalDate.now(ZoneId.of("Europe/Moscow")),
+            tags = emptySet(),
+            urgency = 10,
+            personalInterest = 10,
+            executionTime = 10,
+            complexity = 10,
+            concentration = 10,
+            blocked = false,
+            completed = false
+        )
+    }
+
+    fun updateTask(updatedTask: Task): Task {
+        val existingTask = getTaskById(updatedTask.id!!)
 
         existingTask.apply {
             title = updatedTask.title
@@ -79,7 +96,7 @@ class TaskService(
             completed = updatedTask.completed
         }
 
-        return taskRepository.save(existingTask)
+        return taskRepository.save(existingTask.toTaskDto()).toTask()
     }
 
     fun deleteTask(id: Long) {
