@@ -15,7 +15,7 @@ const getWeightColor = (weight) => {
 };
 
 const Task = ({ task, onUpdateTask, onDeleteTask }) => {
-  const { id, title, description, tagNames, urgency, personalInterest, executionTime, complexity, concentration, blocked, completed } = task;
+  const { id, title, description, tags, urgency, personalInterest, executionTime, complexity, concentration, blocked, completed } = task;
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [editedParams, setEditedParams] = useState({
@@ -166,7 +166,7 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
                 </div>
                 
                 <div className="flex flex-wrap gap-1 mb-2">
-                  {tagNames.map((tag, index) => (
+                  {tags.map((tag, index) => (
                     <span
                       key={index}
                       className="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-0.5 rounded"
@@ -340,7 +340,7 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
           </div>
           
           <div className="hidden sm:flex flex-wrap gap-1 sm:gap-2 mb-2 sm:mb-3">
-            {tagNames.map((tag, index) => (
+            {tags.map((tag, index) => (
               <span
                 key={index}
                 className="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-0.5 rounded"

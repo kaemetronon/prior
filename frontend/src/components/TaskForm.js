@@ -5,7 +5,7 @@ const TaskForm = ({ onSubmit, onClose }) => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    tagNames: '',
+    tags: '',
     urgency: 3,
     personalInterest: 3,
     executionTime: 3,
@@ -32,7 +32,7 @@ const TaskForm = ({ onSubmit, onClose }) => {
     e.preventDefault();
     onSubmit({
       ...formData,
-      tagNames: formData.tagNames.split(',').map(tag => tag.trim()).filter(Boolean),
+      tags: formData.tags.split(',').map(tag => tag.trim()).filter(Boolean),
     });
     onClose();
   };
@@ -90,8 +90,8 @@ const TaskForm = ({ onSubmit, onClose }) => {
             </label>
             <input
               type="text"
-              name="tagNames"
-              value={formData.tagNames}
+              name="tags"
+              value={formData.tags}
               onChange={handleChange}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               placeholder="work, important, project"
