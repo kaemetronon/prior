@@ -41,6 +41,7 @@ class YandexLlmService(
 
         return Task(
             title = title,
+            description = "LLM Vibes",
             date = mskLocalDate(),
             urgency = taskParams.urgency,
             personalInterest = taskParams.personalInterest,
