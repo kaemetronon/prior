@@ -40,6 +40,7 @@ class TaskService(
 
     private fun applyEdgeParams(task: Task): Task =
         task.apply {
+            importance = importance.coerceIn(1, 10)
             urgency = urgency.coerceIn(1, 10)
             personalInterest = personalInterest.coerceIn(1, 10)
             executionTime = executionTime.coerceIn(1, 10)
@@ -55,6 +56,7 @@ class TaskService(
             description = null,
             date = LocalDate.now(ZoneId.of("Europe/Moscow")),
             tags = emptySet(),
+            importance = 10,
             urgency = 10,
             personalInterest = 10,
             executionTime = 10,
@@ -80,6 +82,7 @@ class TaskService(
             title = updatedTask.title
             description = updatedTask.description
             date = updatedTask.date
+            importance = updatedTask.importance.coerceIn(1, 10)
             urgency = updatedTask.urgency.coerceIn(1, 10)
             personalInterest = updatedTask.personalInterest.coerceIn(1, 10)
             executionTime = updatedTask.executionTime.coerceIn(1, 10)

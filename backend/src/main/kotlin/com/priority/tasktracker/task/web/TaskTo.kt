@@ -8,6 +8,7 @@ data class TaskTo(
     val description: String?,
     val date: LocalDate,
     val tags: Set<String>,
+    val importance: Int,
     val urgency: Int,
     val personalInterest: Int,
     val executionTime: Int,

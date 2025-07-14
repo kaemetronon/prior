@@ -28,19 +28,22 @@ data class TaskDto(
     val tags: MutableSet<TagDto> = mutableSetOf(),
 
     @Column(nullable = false)
-    var urgency: Int = 3,
+    var importance: Int = 5,
+
+    @Column(nullable = false)
+    var urgency: Int = 5,
 
     @Column(name = "personal_interest", nullable = false)
-    var personalInterest: Int = 3,
+    var personalInterest: Int = 5,
 
     @Column(name = "execution_time", nullable = false)
-    var executionTime: Int = 3,
+    var executionTime: Int = 5,
 
     @Column(nullable = false)
-    var complexity: Int = 3,
+    var complexity: Int = 5,
 
     @Column(nullable = false)
-    var concentration: Int = 3,
+    var concentration: Int = 5,
 
     @Column(nullable = false)
     var blocked: Boolean = false,

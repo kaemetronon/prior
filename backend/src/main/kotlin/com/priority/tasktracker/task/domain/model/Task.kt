@@ -8,6 +8,7 @@ data class Task(
     var description: String? = null,
     var date: LocalDate,
     var tags: Set<String> = emptySet(),
+    var importance: Int = 5,
     var urgency: Int = 5,
     var personalInterest: Int = 5,
     var executionTime: Int = 5,
