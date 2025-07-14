@@ -15,10 +15,11 @@ const getWeightColor = (weight) => {
 };
 
 const Task = ({ task, onUpdateTask, onDeleteTask }) => {
-  const { id, title, description, tags, urgency, personalInterest, executionTime, complexity, concentration, blocked, completed } = task;
+  const { id, title, description, tags, importance, urgency, personalInterest, executionTime, complexity, concentration, blocked, completed } = task;
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [editedParams, setEditedParams] = useState({
+    importance,
     urgency,
     personalInterest,
     executionTime,
@@ -177,6 +178,30 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
                 </div>
 
                 <div className="grid grid-cols-1 gap-3 text-xs mb-2">
+                  <div className="flex flex-col">
+                    <span className="text-pink-600 font-medium text-sm">Importance:</span>
+                    {isEditing ? (
+                      <>
+                        <input
+                          type="range"
+                          min="1"
+                          max="10"
+                          value={editedParams.importance}
+                          onChange={(e) => handleParamChange('importance', e.target.value)}
+                          className="w-full h-6"
+                        />
+                        <span className="text-xs text-gray-600">{editedParams.importance}/10</span>
+                        <details className="mt-1 text-xs text-gray-500">
+                          <summary>хинт</summary>
+                          <ul>
+                            {HINTS.importance.map((text, idx) => <li key={idx}>{text}</li>)}
+                          </ul>
+                        </details>
+                      </>
+                    ) : (
+                      <span className="ml-1">{importance}/10</span>
+                    )}
+                  </div>
                   <div className="flex flex-col">
                     <span className="text-red-600 font-medium text-sm">Urgency:</span>
                     {isEditing ? (
@@ -350,7 +375,31 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
             ))}
           </div>
 
-          <div className="hidden sm:grid grid-cols-1 sm:grid-cols-5 gap-3 sm:gap-2 text-xs sm:text-sm mb-2 sm:mb-3">
+          <div className="hidden sm:grid grid-cols-1 sm:grid-cols-6 gap-3 sm:gap-2 text-xs sm:text-sm mb-2 sm:mb-3">
+            <div className="flex flex-col">
+              <span className="text-pink-600 font-medium text-sm sm:text-base">Importance:</span>
+              {isEditing ? (
+                <>
+                  <input
+                    type="range"
+                    min="1"
+                    max="10"
+                    value={editedParams.importance}
+                    onChange={(e) => handleParamChange('importance', e.target.value)}
+                    className="w-full h-6 sm:h-8"
+                  />
+                  <span className="text-xs sm:text-sm text-gray-600">{editedParams.importance}/10</span>
+                  <details className="mt-1 text-xs text-gray-500">
+                    <summary>хинт</summary>
+                    <ul>
+                      {HINTS.importance.map((text, idx) => <li key={idx}>{text}</li>)}
+                    </ul>
+                  </details>
+                </>
+              ) : (
+                <span className="ml-1">{importance}/10</span>
+              )}
+            </div>
             <div className="flex flex-col">
               <span className="text-red-600 font-medium text-sm sm:text-base">Urgency:</span>
               {isEditing ? (

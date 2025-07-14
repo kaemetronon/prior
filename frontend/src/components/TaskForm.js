@@ -6,11 +6,12 @@ const TaskForm = ({ onSubmit, onClose }) => {
     title: '',
     description: '',
     tags: '',
-    urgency: 3,
-    personalInterest: 3,
-    executionTime: 3,
-    complexity: 3,
-    concentration: 3,
+    importance: 5,
+    urgency: 5,
+    personalInterest: 5,
+    executionTime: 5,
+    complexity: 5,
+    concentration: 5,
     blocked: false
   });
 
@@ -101,6 +102,27 @@ const TaskForm = ({ onSubmit, onClose }) => {
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
               <label className="block text-gray-700 text-sm font-bold mb-2">
+                Importance
+              </label>
+              <input
+                type="range"
+                name="importance"
+                min="1"
+                max="10"
+                value={formData.importance}
+                onChange={handleChange}
+                className="w-full"
+              />
+              <span className="text-sm text-gray-600">{formData.importance}/10</span>
+              <details className="mt-1 text-xs text-gray-500">
+                <summary>хинт</summary>
+                <ul>
+                  {HINTS.importance.map((text, idx) => <li key={idx}>{text}</li>)}
+                </ul>
+              </details>
+            </div>
+            <div>
+              <label className="block text-gray-700 text-sm font-bold mb-2">
                 Urgency
               </label>
               <input
@@ -120,7 +142,6 @@ const TaskForm = ({ onSubmit, onClose }) => {
                 </ul>
               </details>
             </div>
-
             <div>
               <label className="block text-gray-700 text-sm font-bold mb-2">
                 Personal Interest
@@ -142,7 +163,6 @@ const TaskForm = ({ onSubmit, onClose }) => {
                 </ul>
               </details>
             </div>
-
             <div>
               <label className="block text-gray-700 text-sm font-bold mb-2">
                 Execution Time
@@ -164,7 +184,6 @@ const TaskForm = ({ onSubmit, onClose }) => {
                 </ul>
               </details>
             </div>
-
             <div>
               <label className="block text-gray-700 text-sm font-bold mb-2">
                 Complexity
@@ -186,7 +205,6 @@ const TaskForm = ({ onSubmit, onClose }) => {
                 </ul>
               </details>
             </div>
-
             <div>
               <label className="block text-gray-700 text-sm font-bold mb-2">
                 Concentration
