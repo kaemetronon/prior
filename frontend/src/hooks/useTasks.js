@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { sortTasks } from '../utils/taskUtils';
 import { backendUrl } from '../config';
-import { request } from './useApi';
+import { useApi } from './useApi';
+import { useAuth } from './useAuth';
 
 export function getLocalDateString(date = new Date()) {
   const year = date.getFullYear();
@@ -10,63 +11,70 @@ export function getLocalDateString(date = new Date()) {
   return `${year}-${month}-${day}`;
 }
 
-export const useTasks = (initialDate, token, clearAuth) => {
+export const useTasks = (initialDate) => {
   const [tasks, setTasks] = useState([]);
   const [currentDate, setCurrentDate] = useState(initialDate || getLocalDateString());
+  const { request } = useApi();
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
-    if (!token) return;
-    const url = `${backendUrl}/tasks/date/${currentDate}`;
-    request(token, url, {}, clearAuth)
-      .then(res => {
+    if (!isAuthenticated) return;
+    const fetchTasks = async () => {
+      try {
+        const res = await request(`${backendUrl}/tasks/date/${currentDate}`);
         if (res) {
-          return res.json();
+          const data = await res.json();
+          setTasks(sortTasks(data));
         }
-      })
-      .then(data => {
-        if (data) setTasks(sortTasks(data));
-      })
-      .catch((err) => {
+      } catch (e) {
         setTasks([]);
-      });
-  }, [currentDate, token, clearAuth]);
+      }
+    };
+    fetchTasks();
+  }, [currentDate, request, isAuthenticated]);
 
   const addTask = async (task) => {
-    if (!token) return;
+    if (!isAuthenticated) return;
     const url = `${backendUrl}/tasks`;
     const body = JSON.stringify({ ...task, date: currentDate });
-    const response = await request(token, url, {
-      method: 'POST',
-      body
-    }, clearAuth);
-    if (!response) return;
-    const newTask = await response.json();
-    setTasks(prev => sortTasks([...prev, newTask]));
-    return newTask;
+    try {
+      const response = await request(url, {
+        method: 'POST',
+        body
+      });
+      if (!response) return;
+      const newTask = await response.json();
+      setTasks(prev => sortTasks([...prev, newTask]));
+      return newTask;
+    } catch (e) {}
   };
 
   const updateTask = async (taskId, updatedTask) => {
-    if (!token) return;
+    if (!isAuthenticated) return;
     const url = `${backendUrl}/tasks/${taskId}`;
     const body = JSON.stringify(updatedTask);
-    const response = await request(token, url, {
-      method: 'PUT',
-      body
-    }, clearAuth);
-    if (!response) return;
-    const updatedTaskResponse = await response.json();
-    setTasks(prev => sortTasks(prev.map(task => task.id === taskId ? updatedTaskResponse : task)));
-    return updatedTaskResponse;
+    try {
+      const response = await request(url, {
+        method: 'PUT',
+        body
+      });
+      if (!response) return;
+      const updatedTaskResponse = await response.json();
+      setTasks(prev => sortTasks(prev.map(task => task.id === taskId ? updatedTaskResponse : task)));
+      return updatedTaskResponse;
+    } catch (e) {}
   };
 
   const deleteTask = async (taskId) => {
-    if (!token) return;
+    if (!isAuthenticated) return;
     const url = `${backendUrl}/tasks/${taskId}`;
-    const response = await request(token, url, {
-      method: 'DELETE'
-    }, clearAuth);
-    if (!response) return;
-    setTasks(prev => prev.filter(task => task.id !== taskId));
+    try {
+      const response = await request(url, {
+        method: 'DELETE'
+      });
+      if (!response) return;
+      setTasks(prev => prev.filter(task => task.id !== taskId));
+    } catch (e) {}
   };
 
   const changeDate = (date) => {

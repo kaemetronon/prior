@@ -6,7 +6,7 @@ import TaskList from './components/TaskList';
 import LoginForm from './components/LoginForm';
 
 function App() {
-  const { isAuthenticated, login, logout, token, clearAuth } = useAuth();
+  const { isAuthenticated, login, logout } = useAuth();
   const [showTaskForm, setShowTaskForm] = useState(false);
 
   const {
@@ -16,7 +16,7 @@ function App() {
     updateTask,
     deleteTask,
     changeDate
-  } = useTasks(null, token, clearAuth);
+  } = useTasks(null);
 
   if (!isAuthenticated) {
     return <LoginForm onLogin={login} />;
