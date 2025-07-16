@@ -6,6 +6,7 @@ export const useApi = () => {
 
   const request = useCallback(
     async (url, options = {}) => {
+      console.log('[useApi] request', { url, token });
       const headers = {
         ...(options.headers || {}),
         ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
@@ -17,7 +18,9 @@ export const useApi = () => {
           headers,
         });
         if (response.status === 401) {
+          console.log('[useApi] 401 detected, calling clearAuth');
           clearAuth();
+          console.log('[useApi] clearAuth called after 401');
           throw new Error('Unauthorized');
         }
         return response;

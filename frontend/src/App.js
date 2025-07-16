@@ -9,6 +9,8 @@ function App() {
   const { isAuthenticated, login, logout } = useAuth();
   const [showTaskForm, setShowTaskForm] = useState(false);
 
+  console.log('[App] render, isAuthenticated:', isAuthenticated);
+
   const {
     tasks,
     currentDate,
