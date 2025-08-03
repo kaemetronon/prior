@@ -13,7 +13,7 @@ data class TaskDto(
     @Column(nullable = false, length = 256)
     var title: String,
 
-    @Column(length = 256)
+    @Column
     var description: String? = null,
 
     @Column(nullable = false)
