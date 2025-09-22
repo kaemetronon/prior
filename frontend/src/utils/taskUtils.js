@@ -1,6 +1,6 @@
 export const calculateTaskWeight = (task) => {
   const { importance, urgency, personalInterest, executionTime, complexity, concentration } = task;
-  return (importance * 2.3 + urgency * 2 + personalInterest * 1.8 + executionTime * 1.6 + complexity * 1.3 + concentration * 1) / 10;
+  return (importance * 2.6 + urgency * 2.1 + personalInterest * 1.6 + executionTime * 1.6 + complexity * 1.1 + concentration * 1) / 10;
 };
 
 export const sortTasks = (tasks) => {
