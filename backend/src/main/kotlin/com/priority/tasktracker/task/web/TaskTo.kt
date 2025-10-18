@@ -15,5 +15,6 @@ data class TaskTo(
     val complexity: Int,
     val concentration: Int,
     val blocked: Boolean,
-    val completed: Boolean
+    val completed: Boolean,
+    val weight: Double
 )

@@ -16,7 +16,8 @@ fun Task.toTaskTo(): TaskTo =
         complexity = complexity,
         concentration = concentration,
         blocked = blocked,
-        completed = completed
+        completed = completed,
+        weight = weight
     )
 
 fun TaskTo.toTask(id: Long? = null): Task =

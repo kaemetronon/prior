@@ -49,7 +49,10 @@ data class TaskDto(
     var blocked: Boolean = false,
 
     @Column(nullable = false)
-    var completed: Boolean = false
+    var completed: Boolean = false,
+
+    @Column(nullable = false)
+    var weight: Double = 0.0
 )
 
 enum class TaskStatus {

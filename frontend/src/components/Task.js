@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import DeleteConfirmModal from './DeleteConfirmModal';
-import { calculateTaskWeight } from '../utils/taskUtils';
 import { HINTS } from '../constants/hints';
 
 const getWeightColor = (weight) => {
@@ -15,7 +14,7 @@ const getWeightColor = (weight) => {
 };
 
 const Task = ({ task, onUpdateTask, onDeleteTask }) => {
-  const { id, title, description, tags, importance, urgency, personalInterest, executionTime, complexity, concentration, blocked, completed } = task;
+  const { id, title, description, tags, importance, urgency, personalInterest, executionTime, complexity, concentration, blocked, completed, weight } = task;
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [editedParams, setEditedParams] = useState({
@@ -31,8 +30,11 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
     description
   });
 
-  const weight = calculateTaskWeight(isEditing ? editedParams : task);
-  const weightColor = getWeightColor(weight);
+  const currentWeight = isEditing ? 
+    (editedParams.importance * 2.6 + editedParams.urgency * 2.1 + editedParams.personalInterest * 1.6 + 
+     editedParams.executionTime * 1.6 + editedParams.complexity * 1.1 + editedParams.concentration * 1.0) / 10.0 :
+    weight;
+  const weightColor = getWeightColor(currentWeight);
 
   const handleParamChange = (name, value) => {
     setEditedParams(prev => ({
@@ -105,10 +107,10 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
               className="text-xs sm:text-sm font-medium px-1.5 sm:px-2 py-0.5 sm:py-1 rounded"
               style={{ 
                 backgroundColor: weightColor,
-                color: weight > 5 ? 'white' : 'black'
+                color: currentWeight > 5 ? 'white' : 'black'
               }}
             >
-              Weight: {weight.toFixed(1)}
+              Weight: {currentWeight.toFixed(1)}
             </span>
             <div className="flex gap-1 sm:gap-2 ml-auto flex-shrink-0">
               <button

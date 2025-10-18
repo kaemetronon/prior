@@ -15,5 +15,6 @@ data class Task(
     var complexity: Int = 5,
     var concentration: Int = 5,
     var blocked: Boolean = false,
-    var completed: Boolean = false
+    var completed: Boolean = false,
+    var weight: Double = 0.0
 )

@@ -9,6 +9,13 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+  cache:
+    type: simple
+    cache-names:
+      - tasks
+      - tasksByDate
+    simple:
+      spec: maximumSize=1000,expireAfterWrite=30m
 
 app:
   cors:

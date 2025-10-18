@@ -18,7 +18,8 @@ fun TaskDto.toTask(): Task =
         complexity = complexity,
         concentration = concentration,
         blocked = blocked,
-        completed = completed
+        completed = completed,
+        weight = weight
     )
 
 fun TagDto.toTagName(): String = name
@@ -37,5 +38,6 @@ fun Task.toTaskDto(): TaskDto =
         complexity = complexity,
         concentration = concentration,
         blocked = blocked,
-        completed = completed
+        completed = completed,
+        weight = weight
     )

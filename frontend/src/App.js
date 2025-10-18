@@ -8,6 +8,8 @@ import LoginForm from './components/LoginForm';
 function App() {
   const { isAuthenticated, login, logout } = useAuth();
   const [showTaskForm, setShowTaskForm] = useState(false);
+  const [sortBy, setSortBy] = useState('weight');
+  const [sortOrder, setSortOrder] = useState('desc');
 
   const {
     tasks,
@@ -16,7 +18,7 @@ function App() {
     updateTask,
     deleteTask,
     changeDate
-  } = useTasks(null);
+  } = useTasks(null, sortBy, sortOrder);
 
   if (!isAuthenticated) {
     return <LoginForm onLogin={login} />;
@@ -75,19 +77,44 @@ function App() {
               →
             </button>
           </div>
-          <div className="flex gap-2">
-            <button
-              onClick={() => setShowTaskForm(true)}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 sm:px-4 sm:py-2 rounded-lg shadow hover:shadow-md transition-shadow text-sm sm:text-sm font-medium"
-            >
-              Add Task
-            </button>
-            <button
-              onClick={logout}
-              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 sm:px-4 sm:py-2 rounded-lg shadow hover:shadow-md transition-shadow text-sm sm:text-sm font-medium"
-            >
-              Выйти
-            </button>
+          <div className="flex flex-col sm:flex-row gap-2">
+            <div className="flex gap-2">
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="bg-white px-3 py-2 rounded-lg shadow text-sm border"
+              >
+                <option value="weight">Weight</option>
+                <option value="importance">Importance</option>
+                <option value="urgency">Urgency</option>
+                <option value="personalInterest">Personal Interest</option>
+                <option value="executionTime">Execution Time</option>
+                <option value="complexity">Complexity</option>
+                <option value="concentration">Concentration</option>
+              </select>
+              <select
+                value={sortOrder}
+                onChange={(e) => setSortOrder(e.target.value)}
+                className="bg-white px-3 py-2 rounded-lg shadow text-sm border"
+              >
+                <option value="desc">Desc</option>
+                <option value="asc">Asc</option>
+              </select>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setShowTaskForm(true)}
+                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 sm:px-4 sm:py-2 rounded-lg shadow hover:shadow-md transition-shadow text-sm sm:text-sm font-medium"
+              >
+                Add Task
+              </button>
+              <button
+                onClick={logout}
+                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 sm:px-4 sm:py-2 rounded-lg shadow hover:shadow-md transition-shadow text-sm sm:text-sm font-medium"
+              >
+                Выйти
+              </button>
+            </div>
           </div>
         </div>
 

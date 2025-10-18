@@ -12,14 +12,19 @@ import java.time.LocalDate
 class TaskController(private val taskService: TaskService) {
 
     @GetMapping
-    fun getAllTasks(): ResponseEntity<List<TaskTo>> =
-        ResponseEntity.ok(taskService.getAllTasks().map { it.toTaskTo() })
+    fun getAllTasks(
+        @RequestParam(defaultValue = "weight") sortBy: String,
+        @RequestParam(defaultValue = "desc") sortOrder: String
+    ): ResponseEntity<List<TaskTo>> =
+        ResponseEntity.ok(taskService.getAllTasks(sortBy, sortOrder).map { it.toTaskTo() })
 
     @GetMapping("/date/{date}")
     fun getTasksByDate(
-        @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) date: LocalDate
+        @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) date: LocalDate,
+        @RequestParam(defaultValue = "weight") sortBy: String,
+        @RequestParam(defaultValue = "desc") sortOrder: String
     ): ResponseEntity<List<TaskTo>> =
-        ResponseEntity.ok(taskService.getTasksByDate(date).map { it.toTaskTo() })
+        ResponseEntity.ok(taskService.getTasksByDate(date, sortBy, sortOrder).map { it.toTaskTo() })
 
     @GetMapping("/{id}")
     fun getTaskById(@PathVariable id: Long): ResponseEntity<TaskTo> =

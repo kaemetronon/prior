@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { sortTasks } from '../utils/taskUtils';
 import { backendUrl } from '../config';
 import { useApi } from './useApi';
 import { useAuth } from './useAuth';
@@ -11,7 +10,7 @@ export function getLocalDateString(date = new Date()) {
   return `${year}-${month}-${day}`;
 }
 
-export const useTasks = (initialDate) => {
+export const useTasks = (initialDate, sortBy = 'weight', sortOrder = 'desc') => {
   const [tasks, setTasks] = useState([]);
   const [currentDate, setCurrentDate] = useState(initialDate || getLocalDateString());
   const { request } = useApi();
@@ -21,17 +20,17 @@ export const useTasks = (initialDate) => {
     if (!isAuthenticated) return;
     const fetchTasks = async () => {
       try {
-        const res = await request(`${backendUrl}/tasks/date/${currentDate}`);
+        const res = await request(`${backendUrl}/tasks/date/${currentDate}?sortBy=${sortBy}&sortOrder=${sortOrder}`);
         if (res) {
           const data = await res.json();
-          setTasks(sortTasks(data));
+          setTasks(data);
         }
       } catch (e) {
         setTasks([]);
       }
     };
     fetchTasks();
-  }, [currentDate, request, isAuthenticated]);
+  }, [currentDate, request, isAuthenticated, sortBy, sortOrder]);
 
   const addTask = async (task) => {
     if (!isAuthenticated) return;
@@ -44,7 +43,14 @@ export const useTasks = (initialDate) => {
       });
       if (!response) return;
       const newTask = await response.json();
-      setTasks(prev => sortTasks([...prev, newTask]));
+      
+      // Запрашиваем актуальный список задач после создания для правильной сортировки
+      const tasksResponse = await request(`${backendUrl}/tasks/date/${currentDate}?sortBy=${sortBy}&sortOrder=${sortOrder}`);
+      if (tasksResponse) {
+        const updatedTasks = await tasksResponse.json();
+        setTasks(updatedTasks);
+      }
+      
       return newTask;
     } catch (e) {}
   };
@@ -60,7 +66,7 @@ export const useTasks = (initialDate) => {
       });
       if (!response) return;
       const updatedTaskResponse = await response.json();
-      setTasks(prev => sortTasks(prev.map(task => task.id === taskId ? updatedTaskResponse : task)));
+      setTasks(prev => prev.map(task => task.id === taskId ? updatedTaskResponse : task));
       return updatedTaskResponse;
     } catch (e) {}
   };
