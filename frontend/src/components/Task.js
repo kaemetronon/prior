@@ -1,17 +1,50 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import DeleteConfirmModal from './DeleteConfirmModal';
 import { HINTS } from '../constants/hints';
-import { calculateTaskWeight } from '../utils/taskUtils';
+import { calculateTaskWeight, getWeightColor, isAppleWatch } from '../utils/taskUtils';
 
-const getWeightColor = (weight) => {
-  // Convert weight to a value between 0 and 1
-  const normalizedWeight = (weight - 1) / 9;
-  
-  // Calculate RGB values for gradient from red (1) to green (10)
-  const red = Math.round(255 * (1 - normalizedWeight));
-  const green = Math.round(255 * normalizedWeight);
-  
-  return `rgb(${red}, ${green}, 0)`;
+
+// Компонент для отображения описания с поддержкой переносов строк
+const DescriptionDisplay = ({ description, completed, className = "" }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [needsExpandButton, setNeedsExpandButton] = useState(false);
+  const textRef = useRef(null);
+
+  useEffect(() => {
+    if (textRef.current && description) {
+      // Подсчитываем количество строк, разделяя по переносам строк
+      const lines = description.split('\n').length;
+      // Если есть переносы строк или текст длинный, показываем кнопку
+      setNeedsExpandButton(lines > 3 || description.length > 150);
+    }
+  }, [description]);
+
+  if (!description) return null;
+
+  return (
+    <div className={className}>
+      <div 
+        ref={textRef}
+        className={`${completed ? 'line-through text-gray-400' : ''} whitespace-pre-wrap break-words`}
+        style={{
+          display: isExpanded ? 'block' : '-webkit-box',
+          WebkitLineClamp: isExpanded ? 'unset' : 3,
+          WebkitBoxOrient: 'vertical',
+          overflow: isExpanded ? 'visible' : 'hidden'
+        }}
+      >
+        {description}
+      </div>
+      {needsExpandButton && (
+        <button
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="text-xs text-gray-500 hover:text-gray-700 mt-1 underline focus:outline-none"
+        >
+          {isExpanded ? 'Свернуть' : 'Развернуть'}
+        </button>
+      )}
+    </div>
+  );
 };
 
 const Task = ({ task, onUpdateTask, onDeleteTask }) => {
@@ -154,17 +187,29 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
               <div className="mt-2">
                 <div>
                   {isEditing ? (
-                    <textarea
-                      value={editedContent.description}
-                      onChange={(e) => handleContentChange('description', e.target.value)}
-                      className="text-gray-600 mb-2 bg-gray-50 border border-gray-300 rounded px-1.5 py-1 w-full resize-none text-sm"
-                      placeholder="Task description"
-                      rows="3"
-                    />
+                    isAppleWatch() ? (
+                      <input
+                        type="text"
+                        value={editedContent.description}
+                        onChange={(e) => handleContentChange('description', e.target.value)}
+                        className="text-gray-600 mb-2 bg-gray-50 border border-gray-300 rounded px-1.5 py-1 w-full text-sm"
+                        placeholder="Task description"
+                      />
+                    ) : (
+                      <textarea
+                        value={editedContent.description}
+                        onChange={(e) => handleContentChange('description', e.target.value)}
+                        className="text-gray-600 mb-2 bg-gray-50 border border-gray-300 rounded px-1.5 py-1 w-full resize-y text-sm min-h-[3rem]"
+                        placeholder="Task description"
+                        rows="3"
+                      />
+                    )
                   ) : (
-                    <p className={`text-gray-600 mb-2 text-sm ${completed ? 'line-through text-gray-400' : ''}`}>
-                      {description}
-                    </p>
+                    <DescriptionDisplay 
+                      description={description}
+                      completed={completed}
+                      className="text-gray-600 mb-2 text-sm"
+                    />
                   )}
                 </div>
                 
@@ -352,17 +397,29 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
 
           <div className="hidden sm:block">
             {isEditing ? (
-              <textarea
-                value={editedContent.description}
-                onChange={(e) => handleContentChange('description', e.target.value)}
-                className="text-gray-600 mb-2 sm:mb-3 bg-gray-50 border border-gray-300 rounded px-1.5 sm:px-2 py-1 w-full resize-none text-sm sm:text-base"
-                placeholder="Task description"
-                rows="3"
-              />
+              isAppleWatch() ? (
+                <input
+                  type="text"
+                  value={editedContent.description}
+                  onChange={(e) => handleContentChange('description', e.target.value)}
+                  className="text-gray-600 mb-2 sm:mb-3 bg-gray-50 border border-gray-300 rounded px-1.5 sm:px-2 py-1 w-full text-sm sm:text-base"
+                  placeholder="Task description"
+                />
+              ) : (
+                <textarea
+                  value={editedContent.description}
+                  onChange={(e) => handleContentChange('description', e.target.value)}
+                  className="text-gray-600 mb-2 sm:mb-3 bg-gray-50 border border-gray-300 rounded px-1.5 sm:px-2 py-1 w-full resize-y text-sm sm:text-base min-h-[3rem]"
+                  placeholder="Task description"
+                  rows="3"
+                />
+              )
             ) : (
-              <p className={`text-gray-600 mb-2 sm:mb-3 text-sm sm:text-base ${completed ? 'line-through text-gray-400' : ''}`}>
-                {description}
-              </p>
+              <DescriptionDisplay 
+                description={description}
+                completed={completed}
+                className="text-gray-600 mb-2 sm:mb-3 text-sm sm:text-base"
+              />
             )}
           </div>
           

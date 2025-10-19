@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { HINTS } from '../constants/hints';
+import { calculateTaskWeight, getWeightColor, isAppleWatch } from '../utils/taskUtils';
 
 const TaskForm = ({ onSubmit, onClose }) => {
   const [formData, setFormData] = useState({
@@ -14,6 +15,9 @@ const TaskForm = ({ onSubmit, onClose }) => {
     concentration: 5,
     blocked: false
   });
+
+  // Рассчитываем вес задачи на основе текущих параметров
+  const currentWeight = calculateTaskWeight(formData);
 
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -56,7 +60,18 @@ const TaskForm = ({ onSubmit, onClose }) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center" onClick={handleBackdropClick}>
       <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
-        <h2 className="text-xl font-bold mb-4">Add New Task</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold">Add New Task</h2>
+          <span 
+            className="text-sm font-medium px-2 py-1 rounded"
+            style={{ 
+              backgroundColor: getWeightColor(currentWeight),
+              color: currentWeight > 5 ? 'white' : 'black'
+            }}
+          >
+            Weight: {currentWeight.toFixed(1)}
+          </span>
+        </div>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -76,13 +91,24 @@ const TaskForm = ({ onSubmit, onClose }) => {
             <label className="block text-gray-700 text-sm font-bold mb-2">
               Description
             </label>
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              rows="3"
-            />
+{isAppleWatch() ? (
+              <input
+                type="text"
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                placeholder="Task description"
+              />
+            ) : (
+              <textarea
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline resize-y min-h-[3rem]"
+                rows="3"
+              />
+            )}
           </div>
 
           <div className="mb-4">
