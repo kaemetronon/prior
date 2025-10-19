@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { backendUrl } from '../config';
 import { useApi } from './useApi';
 import { useAuth } from './useAuth';
+import { sortTasks } from '../utils/taskUtils';
 
 export function getLocalDateString(date = new Date()) {
   const year = date.getFullYear();
@@ -23,7 +24,7 @@ export const useTasks = (initialDate, sortBy = 'weight', sortOrder = 'desc') => 
         const res = await request(`${backendUrl}/tasks/date/${currentDate}?sortBy=${sortBy}&sortOrder=${sortOrder}`);
         if (res) {
           const data = await res.json();
-          setTasks(data);
+          setTasks(sortTasks(data, sortBy, sortOrder));
         }
       } catch (e) {
         setTasks([]);
@@ -48,7 +49,7 @@ export const useTasks = (initialDate, sortBy = 'weight', sortOrder = 'desc') => 
       const tasksResponse = await request(`${backendUrl}/tasks/date/${currentDate}?sortBy=${sortBy}&sortOrder=${sortOrder}`);
       if (tasksResponse) {
         const updatedTasks = await tasksResponse.json();
-        setTasks(updatedTasks);
+        setTasks(sortTasks(updatedTasks, sortBy, sortOrder));
       }
       
       return newTask;
@@ -57,6 +58,17 @@ export const useTasks = (initialDate, sortBy = 'weight', sortOrder = 'desc') => 
 
   const updateTask = async (taskId, updatedTask) => {
     if (!isAuthenticated) return;
+    
+    // Оптимистичное обновление для completed - сразу обновляем локальное состояние
+    if (updatedTask.hasOwnProperty('completed')) {
+      setTasks(prev => {
+        const updatedTasks = prev.map(task => 
+          task.id === taskId ? { ...task, completed: updatedTask.completed } : task
+        );
+        return sortTasks(updatedTasks, sortBy, sortOrder);
+      });
+    }
+    
     const url = `${backendUrl}/tasks/${taskId}`;
     const body = JSON.stringify(updatedTask);
     try {
@@ -66,9 +78,25 @@ export const useTasks = (initialDate, sortBy = 'weight', sortOrder = 'desc') => 
       });
       if (!response) return;
       const updatedTaskResponse = await response.json();
-      setTasks(prev => prev.map(task => task.id === taskId ? updatedTaskResponse : task));
+      
+      // Обновляем с данными с сервера и применяем сортировку
+      setTasks(prev => {
+        const updatedTasks = prev.map(task => task.id === taskId ? updatedTaskResponse : task);
+        return sortTasks(updatedTasks, sortBy, sortOrder);
+      });
+      
       return updatedTaskResponse;
-    } catch (e) {}
+    } catch (e) {
+      // В случае ошибки откатываем изменения
+      if (updatedTask.hasOwnProperty('completed')) {
+        setTasks(prev => {
+          const updatedTasks = prev.map(task => 
+            task.id === taskId ? { ...task, completed: !updatedTask.completed } : task
+          );
+          return sortTasks(updatedTasks, sortBy, sortOrder);
+        });
+      }
+    }
   };
 
   const deleteTask = async (taskId) => {

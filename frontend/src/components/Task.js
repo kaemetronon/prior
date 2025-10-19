@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import DeleteConfirmModal from './DeleteConfirmModal';
 import { HINTS } from '../constants/hints';
+import { calculateTaskWeight } from '../utils/taskUtils';
 
 const getWeightColor = (weight) => {
   // Convert weight to a value between 0 and 1
@@ -31,9 +32,8 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
   });
 
   const currentWeight = isEditing ? 
-    (editedParams.importance * 2.6 + editedParams.urgency * 2.1 + editedParams.personalInterest * 1.6 + 
-     editedParams.executionTime * 1.6 + editedParams.complexity * 1.1 + editedParams.concentration * 1.0) / 10.0 :
-    weight;
+    calculateTaskWeight(editedParams) :
+    (weight !== undefined ? weight : calculateTaskWeight(task));
   const weightColor = getWeightColor(currentWeight);
 
   const handleParamChange = (name, value) => {
