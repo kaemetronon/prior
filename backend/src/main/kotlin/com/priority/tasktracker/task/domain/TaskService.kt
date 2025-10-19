@@ -124,7 +124,7 @@ class TaskService(
             task.date = mskLocalDate()
             val note = "[Перенесено с ${oldDate}]"
             task.description = (task.description?.let { "$it\n$note" } ?: note)
-            logger.info("${task.title} $note")
+            logger.info("${task.id} ${task.title} перенесена с ${oldDate}")
             taskRepository.save(task)
         }
     }
