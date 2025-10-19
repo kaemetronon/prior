@@ -25,7 +25,7 @@ const DescriptionDisplay = ({ description, completed, className = "" }) => {
     <div className={className}>
       <div 
         ref={textRef}
-        className={`${completed ? 'line-through text-gray-400' : ''} whitespace-pre-wrap break-words`}
+        className={`${completed ? 'line-through text-gray-400 dark:text-gray-500' : 'text-gray-800 dark:text-gray-200'} whitespace-pre-wrap break-words`}
         style={{
           display: isExpanded ? 'block' : '-webkit-box',
           WebkitLineClamp: isExpanded ? 'unset' : 3,
@@ -38,7 +38,7 @@ const DescriptionDisplay = ({ description, completed, className = "" }) => {
       {needsExpandButton && (
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className="text-xs text-gray-500 hover:text-gray-700 mt-1 underline focus:outline-none"
+          className="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 mt-1 underline focus:outline-none"
         >
           {isExpanded ? 'Свернуть' : 'Развернуть'}
         </button>
@@ -125,14 +125,14 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
   return (
     <>
       <div 
-        className={`bg-white rounded-lg shadow-md p-3 sm:p-4 mb-3 sm:mb-4 hover:shadow-lg transition-shadow flex items-start gap-2 sm:gap-4 ${blocked ? 'bg-red-50' : ''}`}
+        className={`bg-white dark:bg-gray-800 rounded-lg shadow-md p-3 sm:p-4 mb-3 sm:mb-4 hover:shadow-lg transition-all flex items-start gap-2 sm:gap-4 ${blocked ? 'bg-red-50 dark:bg-red-900/20' : ''}`}
         style={{ borderLeft: `4px solid ${weightColor}` }}
       >
         <input
           type="checkbox"
           checked={completed}
           onChange={handleToggleComplete}
-          className="mt-1 h-4 w-4 sm:h-5 sm:w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+          className="mt-1 h-4 w-4 sm:h-5 sm:w-5 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500 dark:bg-gray-700"
         />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1 sm:gap-2 mb-2">
@@ -148,14 +148,14 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
             <div className="flex gap-1 sm:gap-2 ml-auto flex-shrink-0">
               <button
                 onClick={() => setIsEditing(!isEditing)}
-                className="text-sm sm:text-base px-2 py-1.5 sm:px-3 sm:py-2 rounded hover:bg-gray-100 transition-colors"
+                className="text-sm sm:text-base px-2 py-1.5 sm:px-3 sm:py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-gray-800 dark:text-gray-200"
                 title={isEditing ? "Cancel editing" : "Edit task"}
               >
                 {isEditing ? '✕' : '✏️'}
               </button>
               <button
                 onClick={handleDeleteClick}
-                className="text-sm sm:text-base px-2 py-1.5 sm:px-3 sm:py-2 rounded hover:bg-red-100 text-red-600 transition-colors"
+                className="text-sm sm:text-base px-2 py-1.5 sm:px-3 sm:py-2 rounded hover:bg-red-100 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 transition-colors"
                 title="Delete task"
               >
                 🗑️
@@ -169,11 +169,11 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
                 type="text"
                 value={editedContent.title}
                 onChange={(e) => handleContentChange('title', e.target.value)}
-                className="text-base sm:text-lg font-semibold text-gray-800 bg-gray-50 border border-gray-300 rounded px-1.5 sm:px-2 py-1 w-full min-w-0"
+                className="text-base sm:text-lg font-semibold text-gray-800 dark:text-gray-200 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded px-1.5 sm:px-2 py-1 w-full min-w-0"
                 placeholder="Task title"
               />
             ) : (
-              <h3 className={`text-base sm:text-lg font-semibold text-gray-800 ${completed ? 'line-through text-gray-500' : ''} w-full`}>
+              <h3 className={`text-base sm:text-lg font-semibold text-gray-800 dark:text-gray-200 ${completed ? 'line-through text-gray-500 dark:text-gray-400' : ''} w-full`}>
                 {title}
               </h3>
             )}
@@ -192,14 +192,14 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
                         type="text"
                         value={editedContent.description}
                         onChange={(e) => handleContentChange('description', e.target.value)}
-                        className="text-gray-600 mb-2 bg-gray-50 border border-gray-300 rounded px-1.5 py-1 w-full text-sm"
+                        className="text-gray-600 dark:text-gray-300 mb-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded px-1.5 py-1 w-full text-sm"
                         placeholder="Task description"
                       />
                     ) : (
                       <textarea
                         value={editedContent.description}
                         onChange={(e) => handleContentChange('description', e.target.value)}
-                        className="text-gray-600 mb-2 bg-gray-50 border border-gray-300 rounded px-1.5 py-1 w-full resize-y text-sm min-h-[3rem]"
+                        className="text-gray-600 dark:text-gray-300 mb-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded px-1.5 py-1 w-full resize-y text-sm min-h-[3rem]"
                         placeholder="Task description"
                         rows="3"
                       />
@@ -208,7 +208,7 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
                     <DescriptionDisplay 
                       description={description}
                       completed={completed}
-                      className="text-gray-600 mb-2 text-sm"
+                      className="text-gray-600 dark:text-gray-300 mb-2 text-sm"
                     />
                   )}
                 </div>
@@ -217,7 +217,7 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
                   {tags.map((tag, index) => (
                     <span
                       key={index}
-                      className="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-0.5 rounded"
+                      className="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 text-xs font-medium px-2 py-0.5 rounded"
                     >
                       {tag}
                     </span>
@@ -237,8 +237,8 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
                           onChange={(e) => handleParamChange('importance', e.target.value)}
                           className="w-full h-6"
                         />
-                        <span className="text-xs text-gray-600">{editedParams.importance}/10</span>
-                        <details className="mt-1 text-xs text-gray-500">
+                        <span className="text-xs text-gray-600 dark:text-gray-400">{editedParams.importance}/10</span>
+                        <details className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                           <summary>хинт</summary>
                           <ul>
                             {HINTS.importance.map((text, idx) => <li key={idx}>{text}</li>)}
@@ -261,8 +261,8 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
                           onChange={(e) => handleParamChange('urgency', e.target.value)}
                           className="w-full h-6"
                         />
-                        <span className="text-xs text-gray-600">{editedParams.urgency}/10</span>
-                        <details className="mt-1 text-xs text-gray-500">
+                        <span className="text-xs text-gray-600 dark:text-gray-400">{editedParams.urgency}/10</span>
+                        <details className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                           <summary>хинт</summary>
                           <ul>
                             {HINTS.urgency.map((text, idx) => <li key={idx}>{text}</li>)}
@@ -285,8 +285,8 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
                           onChange={(e) => handleParamChange('personalInterest', e.target.value)}
                           className="w-full h-6"
                         />
-                        <span className="text-xs text-gray-600">{editedParams.personalInterest}/10</span>
-                        <details className="mt-1 text-xs text-gray-500">
+                        <span className="text-xs text-gray-600 dark:text-gray-400">{editedParams.personalInterest}/10</span>
+                        <details className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                           <summary>хинт</summary>
                           <ul>
                             {HINTS.personalInterest.map((text, idx) => <li key={idx}>{text}</li>)}
@@ -309,8 +309,8 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
                           onChange={(e) => handleParamChange('executionTime', e.target.value)}
                           className="w-full h-6"
                         />
-                        <span className="text-xs text-gray-600">{editedParams.executionTime}/10</span>
-                        <details className="mt-1 text-xs text-gray-500">
+                        <span className="text-xs text-gray-600 dark:text-gray-400">{editedParams.executionTime}/10</span>
+                        <details className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                           <summary>хинт</summary>
                           <ul>
                             {HINTS.executionTime.map((text, idx) => <li key={idx}>{text}</li>)}
@@ -333,8 +333,8 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
                           onChange={(e) => handleParamChange('complexity', e.target.value)}
                           className="w-full h-6"
                         />
-                        <span className="text-xs text-gray-600">{editedParams.complexity}/10</span>
-                        <details className="mt-1 text-xs text-gray-500">
+                        <span className="text-xs text-gray-600 dark:text-gray-400">{editedParams.complexity}/10</span>
+                        <details className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                           <summary>хинт</summary>
                           <ul>
                             {HINTS.complexity.map((text, idx) => <li key={idx}>{text}</li>)}
@@ -357,8 +357,8 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
                           onChange={(e) => handleParamChange('concentration', e.target.value)}
                           className="w-full h-6"
                         />
-                        <span className="text-xs text-gray-600">{editedParams.concentration}/10</span>
-                        <details className="mt-1 text-xs text-gray-500">
+                        <span className="text-xs text-gray-600 dark:text-gray-400">{editedParams.concentration}/10</span>
+                        <details className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                           <summary>хинт</summary>
                           <ul>
                             {HINTS.concentration.map((text, idx) => <li key={idx}>{text}</li>)}
@@ -375,7 +375,7 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
                   <div className="flex justify-end mb-2">
                     <button
                       onClick={handleSave}
-                      className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1.5 rounded text-sm"
+                      className="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white px-4 py-1.5 rounded text-sm"
                     >
                       Save Changes
                     </button>
@@ -387,9 +387,9 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
                     type="checkbox"
                     checked={blocked}
                     onChange={handleToggleBlocked}
-                    className="h-4 w-4 rounded border-gray-300 text-red-600 focus:ring-red-500"
+                    className="h-4 w-4 rounded border-gray-300 dark:border-gray-600 text-red-600 focus:ring-red-500 dark:bg-gray-700"
                   />
-                  <span className="text-sm text-gray-600">Blocked</span>
+                  <span className="text-sm text-gray-600 dark:text-gray-300">Blocked</span>
                 </div>
               </div>
             </details>
@@ -402,14 +402,14 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
                   type="text"
                   value={editedContent.description}
                   onChange={(e) => handleContentChange('description', e.target.value)}
-                  className="text-gray-600 mb-2 sm:mb-3 bg-gray-50 border border-gray-300 rounded px-1.5 sm:px-2 py-1 w-full text-sm sm:text-base"
+                  className="text-gray-600 dark:text-gray-300 mb-2 sm:mb-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded px-1.5 sm:px-2 py-1 w-full text-sm sm:text-base"
                   placeholder="Task description"
                 />
               ) : (
                 <textarea
                   value={editedContent.description}
                   onChange={(e) => handleContentChange('description', e.target.value)}
-                  className="text-gray-600 mb-2 sm:mb-3 bg-gray-50 border border-gray-300 rounded px-1.5 sm:px-2 py-1 w-full resize-y text-sm sm:text-base min-h-[3rem]"
+                  className="text-gray-600 dark:text-gray-300 mb-2 sm:mb-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded px-1.5 sm:px-2 py-1 w-full resize-y text-sm sm:text-base min-h-[3rem]"
                   placeholder="Task description"
                   rows="3"
                 />
@@ -418,7 +418,7 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
               <DescriptionDisplay 
                 description={description}
                 completed={completed}
-                className="text-gray-600 mb-2 sm:mb-3 text-sm sm:text-base"
+                      className="text-gray-600 dark:text-gray-300 mb-2 sm:mb-3 text-sm sm:text-base"
               />
             )}
           </div>
@@ -427,7 +427,7 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
             {tags.map((tag, index) => (
               <span
                 key={index}
-                className="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-0.5 rounded"
+                className="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 text-xs font-medium px-2 py-0.5 rounded"
               >
                 {tag}
               </span>
@@ -447,7 +447,7 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
                     onChange={(e) => handleParamChange('importance', e.target.value)}
                     className="w-full h-6 sm:h-8"
                   />
-                  <span className="text-xs sm:text-sm text-gray-600">{editedParams.importance}/10</span>
+                  <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">{editedParams.importance}/10</span>
                   <details className="mt-1 text-xs text-gray-500">
                     <summary>хинт</summary>
                     <ul>
@@ -471,7 +471,7 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
                     onChange={(e) => handleParamChange('urgency', e.target.value)}
                     className="w-full h-6 sm:h-8"
                   />
-                  <span className="text-xs sm:text-sm text-gray-600">{editedParams.urgency}/10</span>
+                  <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">{editedParams.urgency}/10</span>
                   <details className="mt-1 text-xs text-gray-500">
                     <summary>хинт</summary>
                     <ul>
@@ -495,7 +495,7 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
                     onChange={(e) => handleParamChange('personalInterest', e.target.value)}
                     className="w-full h-6 sm:h-8"
                   />
-                  <span className="text-xs sm:text-sm text-gray-600">{editedParams.personalInterest}/10</span>
+                  <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">{editedParams.personalInterest}/10</span>
                   <details className="mt-1 text-xs text-gray-500">
                     <summary>хинт</summary>
                     <ul>
@@ -519,7 +519,7 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
                     onChange={(e) => handleParamChange('executionTime', e.target.value)}
                     className="w-full h-6 sm:h-8"
                   />
-                  <span className="text-xs sm:text-sm text-gray-600">{editedParams.executionTime}/10</span>
+                  <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">{editedParams.executionTime}/10</span>
                   <details className="mt-1 text-xs text-gray-500">
                     <summary>хинт</summary>
                     <ul>
@@ -543,7 +543,7 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
                     onChange={(e) => handleParamChange('complexity', e.target.value)}
                     className="w-full h-6 sm:h-8"
                   />
-                  <span className="text-xs sm:text-sm text-gray-600">{editedParams.complexity}/10</span>
+                  <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">{editedParams.complexity}/10</span>
                   <details className="mt-1 text-xs text-gray-500">
                     <summary>хинт</summary>
                     <ul>
@@ -567,7 +567,7 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
                     onChange={(e) => handleParamChange('concentration', e.target.value)}
                     className="w-full h-6 sm:h-8"
                   />
-                  <span className="text-xs sm:text-sm text-gray-600">{editedParams.concentration}/10</span>
+                  <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">{editedParams.concentration}/10</span>
                   <details className="mt-1 text-xs text-gray-500">
                     <summary>хинт</summary>
                     <ul>
@@ -585,7 +585,7 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
             <div className="hidden sm:flex justify-end mb-2 sm:mb-3">
               <button
                 onClick={handleSave}
-                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1.5 rounded text-sm sm:text-base"
+                className="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white px-4 py-1.5 rounded text-sm sm:text-base"
               >
                 Save Changes
               </button>
@@ -597,9 +597,9 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
               type="checkbox"
               checked={blocked}
               onChange={handleToggleBlocked}
-              className="h-4 w-4 sm:h-5 sm:w-5 rounded border-gray-300 text-red-600 focus:ring-red-500"
+              className="h-4 w-4 sm:h-5 sm:w-5 rounded border-gray-300 dark:border-gray-600 text-red-600 focus:ring-red-500 dark:bg-gray-700"
             />
-            <span className="text-sm sm:text-base text-gray-600">Blocked</span>
+            <span className="text-sm sm:text-base text-gray-600 dark:text-gray-300">Blocked</span>
           </div>
         </div>
       </div>
