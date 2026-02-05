@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useTasks, getLocalDateString } from './hooks/useTasks';
 import { useAuth } from './hooks/useAuth';
+import { useTags } from './hooks/useTags';
 import TaskForm from './components/TaskForm';
 import TaskList from './components/TaskList';
 import LoginForm from './components/LoginForm';
@@ -11,6 +12,9 @@ function App() {
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [sortBy, setSortBy] = useState('weight');
   const [sortOrder, setSortOrder] = useState('desc');
+  const [selectedTags, setSelectedTags] = useState([]);
+
+  const { tags: allTags, setTags: setAllTags } = useTags();
 
   const {
     tasks,
@@ -19,7 +23,14 @@ function App() {
     updateTask,
     deleteTask,
     changeDate
-  } = useTasks(null, sortBy, sortOrder);
+  } = useTasks(null, sortBy, sortOrder, selectedTags);
+
+  const visibleTags = useMemo(() => {
+    // показываем все известные теги, но если они не подтянулись — соберём из задач (fallback)
+    const fromTasks = tasks.flatMap(t => (t.tags || [])).filter(Boolean);
+    const merged = [...(allTags || []), ...fromTasks];
+    return Array.from(new Set(merged)).sort();
+  }, [allTags, tasks]);
 
   if (!isAuthenticated) {
     return <LoginForm onLogin={login} />;
@@ -121,6 +132,48 @@ function App() {
         </div>
 
         <div className="grid gap-3 sm:gap-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-3 sm:p-4">
+            <div className="flex items-center justify-between gap-2 mb-2">
+              <div className="text-sm font-semibold text-gray-700 dark:text-gray-200">
+                Tag filter (OR)
+              </div>
+              <button
+                onClick={() => setSelectedTags([])}
+                className="text-xs px-2 py-1 rounded border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
+                disabled={selectedTags.length === 0}
+                title="Clear"
+              >
+                Clear
+              </button>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              {visibleTags.length === 0 && (
+                <div className="text-xs text-gray-500 dark:text-gray-400">No tags yet</div>
+              )}
+              {visibleTags.map((tag) => {
+                const active = selectedTags.includes(tag);
+                return (
+                  <button
+                    key={tag}
+                    onClick={() => {
+                      setSelectedTags((prev) =>
+                        prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+                      );
+                    }}
+                    className={`text-xs font-medium px-2 py-1 rounded border transition-colors ${
+                      active
+                        ? 'bg-blue-500 border-blue-600 text-white'
+                        : 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200 hover:bg-blue-100 dark:hover:bg-blue-900/30'
+                    }`}
+                  >
+                    {tag}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           <TaskList
             tasks={tasks}
             onUpdateTask={handleUpdateTask}
@@ -138,6 +191,11 @@ function App() {
         <TaskForm
           onSubmit={handleAddTask}
           onClose={() => setShowTaskForm(false)}
+          knownTags={visibleTags}
+          onTagCreated={(tag) => {
+            // чтобы только что созданный тег сразу появился в фильтре/подсказках
+            setAllTags((prev) => Array.from(new Set([...(prev || []), tag])).sort());
+          }}
         />
       )}
     </div>

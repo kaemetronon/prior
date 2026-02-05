@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { HINTS } from '../constants/hints';
 import { calculateTaskWeight, getWeightColor, isAppleWatch } from '../utils/taskUtils';
 
-const TaskForm = ({ onSubmit, onClose }) => {
+const TaskForm = ({ onSubmit, onClose, knownTags = [], onTagCreated }) => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    tags: '',
+    tags: [],
     importance: 5,
     urgency: 5,
     personalInterest: 5,
@@ -15,6 +15,8 @@ const TaskForm = ({ onSubmit, onClose }) => {
     concentration: 5,
     blocked: false
   });
+
+  const [newTag, setNewTag] = useState('');
 
   // Рассчитываем вес задачи на основе текущих параметров
   const currentWeight = calculateTaskWeight(formData);
@@ -35,9 +37,18 @@ const TaskForm = ({ onSubmit, onClose }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    const tags = (formData.tags || []).map(t => (t || '').trim()).filter(Boolean);
+
+    // если пользователь набрал тег, но не нажал "add" — всё равно добавим
+    const pending = (newTag || '').trim();
+    const finalTags = pending && !tags.includes(pending) ? [...tags, pending] : tags;
+
+    if (pending && onTagCreated) onTagCreated(pending);
+
     onSubmit({
       ...formData,
-      tags: formData.tags.split(',').map(tag => tag.trim()).filter(Boolean),
+      tags: finalTags,
     });
     onClose();
   };
@@ -48,6 +59,26 @@ const TaskForm = ({ onSubmit, onClose }) => {
       ...prev,
       [name]: type === 'checkbox' ? checked : value,
     }));
+  };
+
+  const toggleTag = (tag) => {
+    const t = (tag || '').trim();
+    if (!t) return;
+    setFormData(prev => {
+      const current = prev.tags || [];
+      return {
+        ...prev,
+        tags: current.includes(t) ? current.filter(x => x !== t) : [...current, t]
+      };
+    });
+  };
+
+  const addNewTag = () => {
+    const t = (newTag || '').trim();
+    if (!t) return;
+    toggleTag(t);
+    if (onTagCreated) onTagCreated(t);
+    setNewTag('');
   };
 
   // Обработчик клика вне модального окна
@@ -113,16 +144,62 @@ const TaskForm = ({ onSubmit, onClose }) => {
 
           <div className="mb-4">
             <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">
-              Tags (comma-separated)
+              Tags
             </label>
-            <input
-              type="text"
-              name="tags"
-              value={formData.tags}
-              onChange={handleChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              placeholder="work, important, project"
-            />
+
+            <div className="flex flex-wrap gap-2 mb-2">
+              {(knownTags || []).length === 0 && (
+                <div className="text-xs text-gray-500 dark:text-gray-400">No tags yet — create a new one below</div>
+              )}
+              {(knownTags || []).map((tag) => {
+                const active = (formData.tags || []).includes(tag);
+                return (
+                  <button
+                    type="button"
+                    key={tag}
+                    onClick={() => toggleTag(tag)}
+                    className={`text-xs font-medium px-2 py-1 rounded border transition-colors ${
+                      active
+                        ? 'bg-blue-500 border-blue-600 text-white'
+                        : 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200 hover:bg-blue-100 dark:hover:bg-blue-900/30'
+                    }`}
+                    title={active ? 'Unselect' : 'Select'}
+                  >
+                    {tag}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={newTag}
+                onChange={(e) => setNewTag(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    addNewTag();
+                  }
+                }}
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                placeholder="Type a new tag and press Enter"
+              />
+              <button
+                type="button"
+                onClick={addNewTag}
+                className="bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-bold px-3 rounded"
+                title="Add"
+              >
+                +
+              </button>
+            </div>
+
+            {(formData.tags || []).length > 0 && (
+              <div className="mt-2 text-xs text-gray-600 dark:text-gray-300">
+                Selected: {(formData.tags || []).join(', ')}
+              </div>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-4 mb-4">

@@ -9,7 +9,11 @@ import java.time.LocalDate
 interface TaskRepository : JpaRepository<TaskDto, Long> {
     @Cacheable(value = ["tasksByDate"], key = "#date.toString()")
     fun findByDate(date: LocalDate): List<TaskDto>
-    
+
+    fun findDistinctByDateAndTagsNameIn(date: LocalDate, tagNames: Collection<String>): List<TaskDto>
+
+    fun findDistinctByTagsNameIn(tagNames: Collection<String>): List<TaskDto>
+
     @Cacheable(value = ["tasks"], key = "'completed_' + #completed + '_date_' + #date.toString()")
     fun findByCompletedAndDateBefore(completed: Boolean, date: LocalDate): List<TaskDto>
-} 
+}

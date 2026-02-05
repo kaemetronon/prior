@@ -19,30 +19,46 @@ class TaskService(
     private val tagRepository: TagRepository,
     private val llmService: LlmService
 ) {
-    fun getAllTasks(sortBy: String = "weight", sortOrder: String = "desc"): List<Task> =
-        taskRepository.findAll().map { it.toTask() }.let { tasks ->
-            sortTasks(tasks, sortBy, sortOrder)
-        }
+    fun getAllTasks(
+        sortBy: String = "weight",
+        sortOrder: String = "desc",
+        tagNames: Set<String> = emptySet()
+    ): List<Task> =
+        (if (tagNames.isEmpty()) taskRepository.findAll() else taskRepository.findDistinctByTagsNameIn(tagNames))
+            .map { it.toTask() }
+            .let { tasks -> sortTasks(tasks, sortBy, sortOrder) }
 
-    fun getTasksByDate(date: LocalDate, sortBy: String = "weight", sortOrder: String = "desc"): List<Task> =
-        taskRepository.findByDate(date).map { it.toTask() }.let { tasks ->
-            sortTasks(tasks, sortBy, sortOrder)
-        }
+    fun getTasksByDate(
+        date: LocalDate,
+        sortBy: String = "weight",
+        sortOrder: String = "desc",
+        tagNames: Set<String> = emptySet()
+    ): List<Task> =
+        (if (tagNames.isEmpty()) taskRepository.findByDate(date) else taskRepository.findDistinctByDateAndTagsNameIn(date, tagNames))
+            .map { it.toTask() }
+            .let { tasks -> sortTasks(tasks, sortBy, sortOrder) }
 
     fun getTaskById(id: Long): Task = taskRepository.findById(id).map { it.toTask() }
         .orElseThrow { NoSuchElementException("Task not found with id: $id") }
 
     private fun getOrCreateTags(tagNames: Set<String>): Set<TagDto> {
-        return tagNames.map { name ->
-            tagRepository.findByName(name) ?: tagRepository.save(TagDto(name = name))
-        }.toSet()
+        return tagNames
+            .map { it.trim() }
+            .filter { it.isNotBlank() }
+            .map { name ->
+                tagRepository.findByName(name) ?: tagRepository.save(TagDto(name = name))
+            }
+            .toSet()
     }
 
     @CacheEvict(value = ["tasks", "tasksByDate"], allEntries = true)
-    fun createTask(task: Task): Task =
-        taskRepository.save(
-            applyEdgeParams(task).apply { weight = calculateTaskWeight(this) }.toTaskDto()
-        ).toTask()
+    fun createTask(task: Task): Task {
+        val normalized = applyEdgeParams(task).apply { weight = calculateTaskWeight(this) }
+        val dto = normalized.toTaskDto()
+        dto.tags.clear()
+        dto.tags.addAll(getOrCreateTags(normalized.tags))
+        return taskRepository.save(dto).toTask()
+    }
 
     private fun applyEdgeParams(task: Task): Task =
         task.apply {
@@ -86,24 +102,30 @@ class TaskService(
 
     @CacheEvict(value = ["tasks", "tasksByDate"], allEntries = true)
     fun updateTask(updatedTask: Task): Task {
-        val existingTask = getTaskById(updatedTask.id!!)
+        val existingDto = taskRepository.findById(updatedTask.id!!)
+            .orElseThrow { NoSuchElementException("Task not found with id: ${updatedTask.id}") }
 
-        existingTask.apply {
-            title = updatedTask.title
-            description = updatedTask.description
-            date = updatedTask.date
-            importance = updatedTask.importance.coerceIn(1, 10)
-            urgency = updatedTask.urgency.coerceIn(1, 10)
-            personalInterest = updatedTask.personalInterest.coerceIn(1, 10)
-            executionTime = updatedTask.executionTime.coerceIn(1, 10)
-            complexity = updatedTask.complexity.coerceIn(1, 10)
-            concentration = updatedTask.concentration.coerceIn(1, 10)
-            blocked = updatedTask.blocked
-            completed = updatedTask.completed
-            weight = calculateTaskWeight(this)
+        val normalized = applyEdgeParams(updatedTask).apply { weight = calculateTaskWeight(this) }
+
+        existingDto.apply {
+            title = normalized.title
+            description = normalized.description
+            date = normalized.date
+            importance = normalized.importance
+            urgency = normalized.urgency
+            personalInterest = normalized.personalInterest
+            executionTime = normalized.executionTime
+            complexity = normalized.complexity
+            concentration = normalized.concentration
+            blocked = normalized.blocked
+            completed = normalized.completed
+            weight = normalized.weight
+
+            tags.clear()
+            tags.addAll(getOrCreateTags(normalized.tags))
         }
 
-        return taskRepository.save(existingTask.toTaskDto()).toTask()
+        return taskRepository.save(existingDto).toTask()
     }
 
     @CacheEvict(value = ["tasks", "tasksByDate"], allEntries = true)

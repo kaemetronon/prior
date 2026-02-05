@@ -14,17 +14,35 @@ class TaskController(private val taskService: TaskService) {
     @GetMapping
     fun getAllTasks(
         @RequestParam(defaultValue = "weight") sortBy: String,
-        @RequestParam(defaultValue = "desc") sortOrder: String
-    ): ResponseEntity<List<TaskTo>> =
-        ResponseEntity.ok(taskService.getAllTasks(sortBy, sortOrder).map { it.toTaskTo() })
+        @RequestParam(defaultValue = "desc") sortOrder: String,
+        @RequestParam(required = false) tags: String?
+    ): ResponseEntity<List<TaskTo>> {
+        val tagNames = tags
+            ?.split(',')
+            ?.map { it.trim() }
+            ?.filter { it.isNotBlank() }
+            ?.toSet()
+            ?: emptySet()
+
+        return ResponseEntity.ok(taskService.getAllTasks(sortBy, sortOrder, tagNames).map { it.toTaskTo() })
+    }
 
     @GetMapping("/date/{date}")
     fun getTasksByDate(
         @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) date: LocalDate,
         @RequestParam(defaultValue = "weight") sortBy: String,
-        @RequestParam(defaultValue = "desc") sortOrder: String
-    ): ResponseEntity<List<TaskTo>> =
-        ResponseEntity.ok(taskService.getTasksByDate(date, sortBy, sortOrder).map { it.toTaskTo() })
+        @RequestParam(defaultValue = "desc") sortOrder: String,
+        @RequestParam(required = false) tags: String?
+    ): ResponseEntity<List<TaskTo>> {
+        val tagNames = tags
+            ?.split(',')
+            ?.map { it.trim() }
+            ?.filter { it.isNotBlank() }
+            ?.toSet()
+            ?: emptySet()
+
+        return ResponseEntity.ok(taskService.getTasksByDate(date, sortBy, sortOrder, tagNames).map { it.toTaskTo() })
+    }
 
     @GetMapping("/{id}")
     fun getTaskById(@PathVariable id: Long): ResponseEntity<TaskTo> =
