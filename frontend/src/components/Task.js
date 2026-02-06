@@ -283,8 +283,8 @@ const Task = ({ task, onUpdateTask, onDeleteTask, knownTags = [], onTagCreated }
   return (
     <>
       <div
-        className={`bg-white dark:bg-gray-800 rounded-lg shadow-md p-3 sm:p-4 mb-3 sm:mb-4 hover:shadow-lg transition-all flex items-start gap-2 sm:gap-4 ${
-          blocked ? 'bg-red-50 dark:bg-red-900/20' : ''
+        className={`${blocked ? 'bg-red-50' : 'bg-white'} dark:bg-gray-800 rounded-lg shadow-md p-3 sm:p-4 mb-3 sm:mb-4 hover:shadow-lg transition-all flex items-start gap-2 sm:gap-4 ${
+          blocked ? 'dark:bg-red-900/20' : ''
         }`}
         style={{ borderLeft: `4px solid ${weightColor}` }}
       >
