@@ -3,7 +3,6 @@ import DeleteConfirmModal from './DeleteConfirmModal';
 import { HINTS } from '../constants/hints';
 import { calculateTaskWeight, getWeightColor, isAppleWatch } from '../utils/taskUtils';
 
-
 // Компонент для отображения описания с поддержкой переносов строк
 const DescriptionDisplay = ({ description, completed, className = "" }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -23,7 +22,7 @@ const DescriptionDisplay = ({ description, completed, className = "" }) => {
 
   return (
     <div className={className}>
-      <div 
+      <div
         ref={textRef}
         className={`${completed ? 'line-through text-gray-400 dark:text-gray-500' : 'text-gray-800 dark:text-gray-200'} whitespace-pre-wrap break-words`}
         style={{
@@ -47,10 +46,26 @@ const DescriptionDisplay = ({ description, completed, className = "" }) => {
   );
 };
 
-const Task = ({ task, onUpdateTask, onDeleteTask }) => {
-  const { id, title, description, tags, importance, urgency, personalInterest, executionTime, complexity, concentration, blocked, completed, weight } = task;
+const Task = ({ task, onUpdateTask, onDeleteTask, knownTags = [], onTagCreated }) => {
+  const {
+    id,
+    title,
+    description,
+    tags,
+    importance,
+    urgency,
+    personalInterest,
+    executionTime,
+    complexity,
+    concentration,
+    blocked,
+    completed,
+    weight
+  } = task;
+
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+
   const [editedParams, setEditedParams] = useState({
     importance,
     urgency,
@@ -59,35 +74,81 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
     complexity,
     concentration
   });
+
   const [editedContent, setEditedContent] = useState({
     title,
     description
   });
 
-  const currentWeight = isEditing ? 
-    calculateTaskWeight(editedParams) :
-    (weight !== undefined ? weight : calculateTaskWeight(task));
+  const [editedTags, setEditedTags] = useState(Array.isArray(tags) ? tags : []);
+  const [newTag, setNewTag] = useState('');
+  const [isTagsOpen, setIsTagsOpen] = useState(false);
+
+  // при открытии режима редактирования — синкаем state с текущей задачей
+  useEffect(() => {
+    if (!isEditing) return;
+    setEditedParams({
+      importance: task.importance,
+      urgency: task.urgency,
+      personalInterest: task.personalInterest,
+      executionTime: task.executionTime,
+      complexity: task.complexity,
+      concentration: task.concentration
+    });
+    setEditedContent({ title: task.title, description: task.description || '' });
+    setEditedTags(Array.isArray(task.tags) ? task.tags : []);
+    setNewTag('');
+    setIsTagsOpen(false);
+  }, [isEditing, task]);
+
+  const currentWeight = isEditing
+    ? calculateTaskWeight({ ...editedParams, blocked: task.blocked })
+    : (weight !== undefined ? weight : calculateTaskWeight(task));
   const weightColor = getWeightColor(currentWeight);
 
   const handleParamChange = (name, value) => {
-    setEditedParams(prev => ({
+    setEditedParams((prev) => ({
       ...prev,
       [name]: parseInt(value)
     }));
   };
 
   const handleContentChange = (name, value) => {
-    setEditedContent(prev => ({
+    setEditedContent((prev) => ({
       ...prev,
       [name]: value
     }));
+  };
+
+  const removeTag = (tag) => {
+    const t = (tag || '').trim();
+    if (!t) return;
+    setEditedTags((prev) => (prev || []).filter((x) => x !== t));
+  };
+
+  const toggleTag = (tag) => {
+    const t = (tag || '').trim();
+    if (!t) return;
+    setEditedTags((prev) => {
+      const current = prev || [];
+      return current.includes(t) ? current.filter((x) => x !== t) : [...current, t];
+    });
+  };
+
+  const addNewTag = () => {
+    const t = (newTag || '').trim();
+    if (!t) return;
+    if (onTagCreated) onTagCreated(t);
+    toggleTag(t);
+    setNewTag('');
   };
 
   const handleSave = () => {
     const updatedTask = {
       ...task,
       ...editedParams,
-      ...editedContent
+      ...editedContent,
+      tags: Array.from(new Set((editedTags || []).map((t) => (t || '').trim()).filter(Boolean)))
     };
     onUpdateTask(id, updatedTask);
     setIsEditing(false);
@@ -122,10 +183,109 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
     setShowDeleteModal(false);
   };
 
+  const renderTagsReadOnly = (list) => (
+    (list || []).map((tag, index) => (
+      <span
+        key={`${tag}-${index}`}
+        className="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 text-xs font-medium px-2 py-0.5 rounded"
+      >
+        {tag}
+      </span>
+    ))
+  );
+
+  const renderTagsEditor = () => (
+    <div className="w-full">
+      <div className="flex flex-wrap gap-1 sm:gap-2 mb-2">
+        {(editedTags || []).length === 0 && (
+          <div className="text-xs text-gray-500 dark:text-gray-400">No tags</div>
+        )}
+        {(editedTags || []).map((tag) => (
+          <span
+            key={tag}
+            className="inline-flex items-center gap-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 text-xs font-medium px-2 py-0.5 rounded"
+          >
+            {tag}
+            <button
+              type="button"
+              onClick={() => removeTag(tag)}
+              className="ml-1 text-blue-700/80 dark:text-blue-200/80 hover:text-blue-900 dark:hover:text-white"
+              title="Remove tag"
+            >
+              ×
+            </button>
+          </span>
+        ))}
+      </div>
+
+      <button
+        type="button"
+        onClick={() => setIsTagsOpen((v) => !v)}
+        className="text-xs text-gray-600 dark:text-gray-300 underline hover:text-gray-800 dark:hover:text-gray-100"
+      >
+        {isTagsOpen ? 'Hide tags editor' : '> Tags'}
+      </button>
+
+      {isTagsOpen && (
+        <div className="mt-2">
+          <div className="flex flex-wrap gap-2 mb-2">
+            {(knownTags || []).length === 0 && (
+              <div className="text-xs text-gray-500 dark:text-gray-400">No known tags yet — create one below</div>
+            )}
+            {(knownTags || []).map((tag) => {
+              const active = (editedTags || []).includes(tag);
+              return (
+                <button
+                  type="button"
+                  key={tag}
+                  onClick={() => toggleTag(tag)}
+                  className={`text-xs font-medium px-2 py-1 rounded border transition-colors ${
+                    active
+                      ? 'bg-blue-500 border-blue-600 text-white'
+                      : 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200 hover:bg-blue-100 dark:hover:bg-blue-900/30'
+                  }`}
+                  title={active ? 'Unselect' : 'Select'}
+                >
+                  {tag}
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={newTag}
+              onChange={(e) => setNewTag(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  addNewTag();
+                }
+              }}
+              className="shadow appearance-none border border-gray-300 dark:border-gray-600 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 placeholder-gray-400 dark:placeholder-gray-400 leading-tight focus:outline-none focus:shadow-outline"
+              placeholder="Type a new tag and press Enter"
+            />
+            <button
+              type="button"
+              onClick={addNewTag}
+              className="bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-bold px-3 rounded"
+              title="Add"
+            >
+              +
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <>
-      <div 
-        className={`bg-white dark:bg-gray-800 rounded-lg shadow-md p-3 sm:p-4 mb-3 sm:mb-4 hover:shadow-lg transition-all flex items-start gap-2 sm:gap-4 ${blocked ? 'bg-red-50 dark:bg-red-900/20' : ''}`}
+      <div
+        className={`bg-white dark:bg-gray-800 rounded-lg shadow-md p-3 sm:p-4 mb-3 sm:mb-4 hover:shadow-lg transition-all flex items-start gap-2 sm:gap-4 ${
+          blocked ? 'bg-red-50 dark:bg-red-900/20' : ''
+        }`}
         style={{ borderLeft: `4px solid ${weightColor}` }}
       >
         <input
@@ -136,9 +296,9 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
         />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1 sm:gap-2 mb-2">
-            <span 
+            <span
               className="text-xs sm:text-sm font-medium px-1.5 sm:px-2 py-0.5 sm:py-1 rounded"
-              style={{ 
+              style={{
                 backgroundColor: weightColor,
                 color: currentWeight > 5 ? 'white' : 'black'
               }}
@@ -149,7 +309,7 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
               <button
                 onClick={() => setIsEditing(!isEditing)}
                 className="text-sm sm:text-base px-2 py-1.5 sm:px-3 sm:py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-gray-800 dark:text-gray-200"
-                title={isEditing ? "Cancel editing" : "Edit task"}
+                title={isEditing ? 'Cancel editing' : 'Edit task'}
               >
                 {isEditing ? '✕' : '✏️'}
               </button>
@@ -162,7 +322,7 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
               </button>
             </div>
           </div>
-          
+
           <div className="mb-2">
             {isEditing ? (
               <input
@@ -173,17 +333,19 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
                 placeholder="Task title"
               />
             ) : (
-              <h3 className={`text-base sm:text-lg font-semibold text-gray-800 dark:text-gray-200 ${completed ? 'line-through text-gray-500 dark:text-gray-400' : ''} w-full`}>
+              <h3
+                className={`text-base sm:text-lg font-semibold text-gray-800 dark:text-gray-200 ${
+                  completed ? 'line-through text-gray-500 dark:text-gray-400' : ''
+                } w-full`}
+              >
                 {title}
               </h3>
             )}
           </div>
-          
+
           <div className="sm:hidden mb-2">
             <details className="text-sm">
-              <summary className="text-blue-600 hover:text-blue-800 cursor-pointer">
-                Подробнее
-              </summary>
+              <summary className="text-blue-600 hover:text-blue-800 cursor-pointer">Подробнее</summary>
               <div className="mt-2">
                 <div>
                   {isEditing ? (
@@ -205,23 +367,16 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
                       />
                     )
                   ) : (
-                    <DescriptionDisplay 
+                    <DescriptionDisplay
                       description={description}
                       completed={completed}
                       className="text-gray-600 dark:text-gray-300 mb-2 text-sm"
                     />
                   )}
                 </div>
-                
+
                 <div className="flex flex-wrap gap-1 mb-2">
-                  {tags.map((tag, index) => (
-                    <span
-                      key={index}
-                      className="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 text-xs font-medium px-2 py-0.5 rounded"
-                    >
-                      {tag}
-                    </span>
-                  ))}
+                  {isEditing ? renderTagsEditor() : renderTagsReadOnly(tags)}
                 </div>
 
                 <div className="grid grid-cols-1 gap-3 text-xs mb-2">
@@ -240,9 +395,7 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
                         <span className="text-xs text-gray-600 dark:text-gray-400">{editedParams.importance}/10</span>
                         <details className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                           <summary>хинт</summary>
-                          <ul>
-                            {HINTS.importance.map((text, idx) => <li key={idx}>{text}</li>)}
-                          </ul>
+                          <ul>{HINTS.importance.map((text, idx) => <li key={idx}>{text}</li>)}</ul>
                         </details>
                       </>
                     ) : (
@@ -264,9 +417,7 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
                         <span className="text-xs text-gray-600 dark:text-gray-400">{editedParams.urgency}/10</span>
                         <details className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                           <summary>хинт</summary>
-                          <ul>
-                            {HINTS.urgency.map((text, idx) => <li key={idx}>{text}</li>)}
-                          </ul>
+                          <ul>{HINTS.urgency.map((text, idx) => <li key={idx}>{text}</li>)}</ul>
                         </details>
                       </>
                     ) : (
@@ -288,9 +439,7 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
                         <span className="text-xs text-gray-600 dark:text-gray-400">{editedParams.personalInterest}/10</span>
                         <details className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                           <summary>хинт</summary>
-                          <ul>
-                            {HINTS.personalInterest.map((text, idx) => <li key={idx}>{text}</li>)}
-                          </ul>
+                          <ul>{HINTS.personalInterest.map((text, idx) => <li key={idx}>{text}</li>)}</ul>
                         </details>
                       </>
                     ) : (
@@ -312,9 +461,7 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
                         <span className="text-xs text-gray-600 dark:text-gray-400">{editedParams.executionTime}/10</span>
                         <details className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                           <summary>хинт</summary>
-                          <ul>
-                            {HINTS.executionTime.map((text, idx) => <li key={idx}>{text}</li>)}
-                          </ul>
+                          <ul>{HINTS.executionTime.map((text, idx) => <li key={idx}>{text}</li>)}</ul>
                         </details>
                       </>
                     ) : (
@@ -336,9 +483,7 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
                         <span className="text-xs text-gray-600 dark:text-gray-400">{editedParams.complexity}/10</span>
                         <details className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                           <summary>хинт</summary>
-                          <ul>
-                            {HINTS.complexity.map((text, idx) => <li key={idx}>{text}</li>)}
-                          </ul>
+                          <ul>{HINTS.complexity.map((text, idx) => <li key={idx}>{text}</li>)}</ul>
                         </details>
                       </>
                     ) : (
@@ -360,9 +505,7 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
                         <span className="text-xs text-gray-600 dark:text-gray-400">{editedParams.concentration}/10</span>
                         <details className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                           <summary>хинт</summary>
-                          <ul>
-                            {HINTS.concentration.map((text, idx) => <li key={idx}>{text}</li>)}
-                          </ul>
+                          <ul>{HINTS.concentration.map((text, idx) => <li key={idx}>{text}</li>)}</ul>
                         </details>
                       </>
                     ) : (
@@ -415,23 +558,16 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
                 />
               )
             ) : (
-              <DescriptionDisplay 
+              <DescriptionDisplay
                 description={description}
                 completed={completed}
-                      className="text-gray-600 dark:text-gray-300 mb-2 sm:mb-3 text-sm sm:text-base"
+                className="text-gray-600 dark:text-gray-300 mb-2 sm:mb-3 text-sm sm:text-base"
               />
             )}
           </div>
-          
+
           <div className="hidden sm:flex flex-wrap gap-1 sm:gap-2 mb-2 sm:mb-3">
-            {tags.map((tag, index) => (
-              <span
-                key={index}
-                className="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 text-xs font-medium px-2 py-0.5 rounded"
-              >
-                {tag}
-              </span>
-            ))}
+            {isEditing ? renderTagsEditor() : renderTagsReadOnly(tags)}
           </div>
 
           <div className="hidden sm:grid grid-cols-1 sm:grid-cols-6 gap-3 sm:gap-2 text-xs sm:text-sm mb-2 sm:mb-3">
@@ -450,9 +586,7 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
                   <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">{editedParams.importance}/10</span>
                   <details className="mt-1 text-xs text-gray-500">
                     <summary>хинт</summary>
-                    <ul>
-                      {HINTS.importance.map((text, idx) => <li key={idx}>{text}</li>)}
-                    </ul>
+                    <ul>{HINTS.importance.map((text, idx) => <li key={idx}>{text}</li>)}</ul>
                   </details>
                 </>
               ) : (
@@ -474,9 +608,7 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
                   <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">{editedParams.urgency}/10</span>
                   <details className="mt-1 text-xs text-gray-500">
                     <summary>хинт</summary>
-                    <ul>
-                      {HINTS.urgency.map((text, idx) => <li key={idx}>{text}</li>)}
-                    </ul>
+                    <ul>{HINTS.urgency.map((text, idx) => <li key={idx}>{text}</li>)}</ul>
                   </details>
                 </>
               ) : (
@@ -498,9 +630,7 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
                   <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">{editedParams.personalInterest}/10</span>
                   <details className="mt-1 text-xs text-gray-500">
                     <summary>хинт</summary>
-                    <ul>
-                      {HINTS.personalInterest.map((text, idx) => <li key={idx}>{text}</li>)}
-                    </ul>
+                    <ul>{HINTS.personalInterest.map((text, idx) => <li key={idx}>{text}</li>)}</ul>
                   </details>
                 </>
               ) : (
@@ -522,9 +652,7 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
                   <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">{editedParams.executionTime}/10</span>
                   <details className="mt-1 text-xs text-gray-500">
                     <summary>хинт</summary>
-                    <ul>
-                      {HINTS.executionTime.map((text, idx) => <li key={idx}>{text}</li>)}
-                    </ul>
+                    <ul>{HINTS.executionTime.map((text, idx) => <li key={idx}>{text}</li>)}</ul>
                   </details>
                 </>
               ) : (
@@ -546,9 +674,7 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
                   <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">{editedParams.complexity}/10</span>
                   <details className="mt-1 text-xs text-gray-500">
                     <summary>хинт</summary>
-                    <ul>
-                      {HINTS.complexity.map((text, idx) => <li key={idx}>{text}</li>)}
-                    </ul>
+                    <ul>{HINTS.complexity.map((text, idx) => <li key={idx}>{text}</li>)}</ul>
                   </details>
                 </>
               ) : (
@@ -570,9 +696,7 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
                   <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">{editedParams.concentration}/10</span>
                   <details className="mt-1 text-xs text-gray-500">
                     <summary>хинт</summary>
-                    <ul>
-                      {HINTS.concentration.map((text, idx) => <li key={idx}>{text}</li>)}
-                    </ul>
+                    <ul>{HINTS.concentration.map((text, idx) => <li key={idx}>{text}</li>)}</ul>
                   </details>
                 </>
               ) : (
@@ -614,4 +738,4 @@ const Task = ({ task, onUpdateTask, onDeleteTask }) => {
   );
 };
 
-export default Task; 
+export default Task;

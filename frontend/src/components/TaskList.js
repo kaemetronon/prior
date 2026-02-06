@@ -1,7 +1,7 @@
 import React from 'react';
 import Task from './Task';
 
-const TaskList = ({ tasks, onUpdateTask, onDeleteTask }) => {
+const TaskList = ({ tasks, onUpdateTask, onDeleteTask, knownTags = [], onTagCreated }) => {
   return (
     <div className="space-y-4">
       {tasks.map((task) => (
@@ -10,10 +10,12 @@ const TaskList = ({ tasks, onUpdateTask, onDeleteTask }) => {
           task={task}
           onUpdateTask={onUpdateTask}
           onDeleteTask={onDeleteTask}
+          knownTags={knownTags}
+          onTagCreated={onTagCreated}
         />
       ))}
     </div>
   );
 };
 
-export default TaskList; 
+export default TaskList;

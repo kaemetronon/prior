@@ -113,7 +113,7 @@ const TaskForm = ({ onSubmit, onClose, knownTags = [], onTagCreated }) => {
               name="title"
               value={formData.title}
               onChange={handleChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="shadow appearance-none border border-gray-300 dark:border-gray-600 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 placeholder-gray-400 dark:placeholder-gray-400 leading-tight focus:outline-none focus:shadow-outline"
               required
             />
           </div>
@@ -182,7 +182,7 @@ const TaskForm = ({ onSubmit, onClose, knownTags = [], onTagCreated }) => {
                     addNewTag();
                   }
                 }}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                className="shadow appearance-none border border-gray-300 dark:border-gray-600 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 placeholder-gray-400 dark:placeholder-gray-400 leading-tight focus:outline-none focus:shadow-outline"
                 placeholder="Type a new tag and press Enter"
               />
               <button

@@ -178,6 +178,10 @@ function App() {
             tasks={tasks}
             onUpdateTask={handleUpdateTask}
             onDeleteTask={handleDeleteTask}
+            knownTags={visibleTags}
+            onTagCreated={(tag) => {
+              setAllTags((prev) => Array.from(new Set([...(prev || []), tag])).sort());
+            }}
           />
           {tasks.length === 0 && (
             <div className="text-center text-gray-500 dark:text-gray-400 py-8">
