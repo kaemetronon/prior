@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { backendUrl } from '../config';
 import { useApi } from './useApi';
 import { useAuth } from './useAuth';
@@ -14,25 +14,61 @@ export function getLocalDateString(date = new Date()) {
 export const useTasks = (initialDate, sortBy = 'weight', sortOrder = 'desc', selectedTags = []) => {
   const [tasks, setTasks] = useState([]);
   const [currentDate, setCurrentDate] = useState(initialDate || getLocalDateString());
+
+  // cache: date -> tasks[] (as received from backend)
+  const [tasksCacheByDate, setTasksCacheByDate] = useState({});
+  const [cacheVersion, setCacheVersion] = useState(0);
+
   const { request } = useApi();
   const { isAuthenticated } = useAuth();
 
+  const cachedTasksForDate = tasksCacheByDate[currentDate];
+
+  // 1) Fetch tasks for date once and keep in frontend cache.
+  // 2) Tag filtering happens locally (no backend request).
+  // Cache is invalidated on create/update/delete (simple approach).
   useEffect(() => {
     if (!isAuthenticated) return;
+    if (cachedTasksForDate) return;
+
     const fetchTasks = async () => {
       try {
-        const tagsParam = selectedTags && selectedTags.length ? `&tags=${encodeURIComponent(selectedTags.join(','))}` : '';
-        const res = await request(`${backendUrl}/tasks/date/${currentDate}?sortBy=${sortBy}&sortOrder=${sortOrder}${tagsParam}`);
-        if (res) {
-          const data = await res.json();
-          setTasks(sortTasks(data, sortBy, sortOrder));
-        }
+        const res = await request(`${backendUrl}/tasks/date/${currentDate}`);
+        if (!res) return;
+        const data = await res.json();
+        const arr = Array.isArray(data) ? data : [];
+        setTasksCacheByDate((prev) => ({ ...prev, [currentDate]: arr }));
       } catch (e) {
-        setTasks([]);
+        setTasksCacheByDate((prev) => ({ ...prev, [currentDate]: [] }));
       }
     };
+
     fetchTasks();
-  }, [currentDate, request, isAuthenticated, sortBy, sortOrder, selectedTags]);
+  }, [currentDate, request, isAuthenticated, cachedTasksForDate, cacheVersion]);
+
+  const filteredAndSortedTasks = useMemo(() => {
+    const base = cachedTasksForDate || [];
+    const selected = (selectedTags || []).filter(Boolean);
+
+    // OR filter: task matches if it has ANY of selected tags
+    const filtered = selected.length
+      ? base.filter((t) => {
+          const tags = Array.isArray(t.tags) ? t.tags : [];
+          return tags.some((tag) => selected.includes(tag));
+        })
+      : base;
+
+    return sortTasks(filtered, sortBy, sortOrder);
+  }, [cachedTasksForDate, selectedTags, sortBy, sortOrder]);
+
+  useEffect(() => {
+    setTasks(filteredAndSortedTasks);
+  }, [filteredAndSortedTasks]);
+
+  const invalidateCache = () => {
+    setTasksCacheByDate({});
+    setCacheVersion((v) => v + 1);
+  };
 
   const addTask = async (task) => {
     if (!isAuthenticated) return;
@@ -45,32 +81,22 @@ export const useTasks = (initialDate, sortBy = 'weight', sortOrder = 'desc', sel
       });
       if (!response) return;
       const newTask = await response.json();
-      
-      // Запрашиваем актуальный список задач после создания для правильной сортировки
-      const tagsParam = selectedTags && selectedTags.length ? `&tags=${encodeURIComponent(selectedTags.join(','))}` : '';
-      const tasksResponse = await request(`${backendUrl}/tasks/date/${currentDate}?sortBy=${sortBy}&sortOrder=${sortOrder}${tagsParam}`);
-      if (tasksResponse) {
-        const updatedTasks = await tasksResponse.json();
-        setTasks(sortTasks(updatedTasks, sortBy, sortOrder));
-      }
-      
+      invalidateCache();
       return newTask;
     } catch (e) {}
   };
 
   const updateTask = async (taskId, updatedTask) => {
     if (!isAuthenticated) return;
-    
-    // Оптимистичное обновление для completed - сразу обновляем локальное состояние
+
+    // Optimistic update for completed only (keeps UI snappy)
     if (updatedTask.hasOwnProperty('completed')) {
-      setTasks(prev => {
-        const updatedTasks = prev.map(task => 
-          task.id === taskId ? { ...task, completed: updatedTask.completed } : task
-        );
-        return sortTasks(updatedTasks, sortBy, sortOrder);
+      setTasks((prev) => {
+        const updated = prev.map((task) => (task.id === taskId ? { ...task, completed: updatedTask.completed } : task));
+        return sortTasks(updated, sortBy, sortOrder);
       });
     }
-    
+
     const url = `${backendUrl}/tasks/${taskId}`;
     const body = JSON.stringify(updatedTask);
     try {
@@ -80,22 +106,14 @@ export const useTasks = (initialDate, sortBy = 'weight', sortOrder = 'desc', sel
       });
       if (!response) return;
       const updatedTaskResponse = await response.json();
-      
-      // Обновляем с данными с сервера и применяем сортировку
-      setTasks(prev => {
-        const updatedTasks = prev.map(task => task.id === taskId ? updatedTaskResponse : task);
-        return sortTasks(updatedTasks, sortBy, sortOrder);
-      });
-      
+      invalidateCache();
       return updatedTaskResponse;
     } catch (e) {
-      // В случае ошибки откатываем изменения
+      // rollback optimistic completed
       if (updatedTask.hasOwnProperty('completed')) {
-        setTasks(prev => {
-          const updatedTasks = prev.map(task => 
-            task.id === taskId ? { ...task, completed: !updatedTask.completed } : task
-          );
-          return sortTasks(updatedTasks, sortBy, sortOrder);
+        setTasks((prev) => {
+          const updated = prev.map((task) => (task.id === taskId ? { ...task, completed: !updatedTask.completed } : task));
+          return sortTasks(updated, sortBy, sortOrder);
         });
       }
     }
@@ -109,7 +127,7 @@ export const useTasks = (initialDate, sortBy = 'weight', sortOrder = 'desc', sel
         method: 'DELETE'
       });
       if (!response) return;
-      setTasks(prev => prev.filter(task => task.id !== taskId));
+      invalidateCache();
     } catch (e) {}
   };
 
@@ -125,4 +143,4 @@ export const useTasks = (initialDate, sortBy = 'weight', sortOrder = 'desc', sel
     deleteTask,
     changeDate,
   };
-}; 
+};
