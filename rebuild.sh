@@ -1,7 +1,17 @@
 #!/bin/bash
 
-git pull
-CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD)
+set -euo pipefail
+
+OLD_REV=$(git rev-parse HEAD)
+git pull --ff-only
+NEW_REV=$(git rev-parse HEAD)
+
+if [[ "$OLD_REV" == "$NEW_REV" ]]; then
+  echo "Repo already up to date."
+  CHANGED_FILES=""
+else
+  CHANGED_FILES=$(git diff --name-only "$OLD_REV" "$NEW_REV")
+fi
 
 FRONT_MODIFIED=false
 BACK_MODIFIED=false

@@ -5,10 +5,10 @@ import java.time.LocalDate
 
 @Entity
 @Table(name = "tasks")
-data class TaskDto(
+class TaskDto(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null,
+    var id: Long? = null,
 
     @Column(nullable = false, length = 256)
     var title: String,
@@ -19,13 +19,13 @@ data class TaskDto(
     @Column(nullable = false)
     var date: LocalDate,
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "task_tags",
         joinColumns = [JoinColumn(name = "task_id")],
         inverseJoinColumns = [JoinColumn(name = "tag_id")]
     )
-    val tags: MutableSet<TagDto> = mutableSetOf(),
+    var tags: MutableSet<TagDto> = mutableSetOf(),
 
     @Column(nullable = false)
     var importance: Int = 5,
@@ -53,7 +53,16 @@ data class TaskDto(
 
     @Column(nullable = false)
     var weight: Double = 0.0
-)
+) {
+    // Important: stable equality for Hibernate collections (do NOT include tags in equals/hashCode)
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is TaskDto) return false
+        return id != null && id == other.id
+    }
+
+    override fun hashCode(): Int = id?.hashCode() ?: System.identityHashCode(this)
+}
 
 enum class TaskStatus {
     PENDING,

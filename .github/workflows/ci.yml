@@ -19,4 +19,4 @@ jobs:
           script: |
             cd ~/prior
             ./rebuild.sh
-            docker compose up -d nginx certbot
+            docker-compose up -d nginx certbot
