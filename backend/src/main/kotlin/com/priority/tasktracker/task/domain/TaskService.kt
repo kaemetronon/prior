@@ -10,6 +10,7 @@ import com.priority.tasktracker.utils.WithLogging
 import org.springframework.cache.annotation.CacheEvict
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
 import java.time.ZoneId
 
@@ -101,11 +102,15 @@ class TaskService(
     }
 
     @CacheEvict(value = ["tasks", "tasksByDate"], allEntries = true)
+    @Transactional
     fun updateTask(updatedTask: Task): Task {
         val existingDto = taskRepository.findById(updatedTask.id!!)
             .orElseThrow { NoSuchElementException("Task not found with id: ${updatedTask.id}") }
 
+        val previousTags = existingDto.tags.toSet()
+
         val normalized = applyEdgeParams(updatedTask).apply { weight = calculateTaskWeight(this) }
+        val newTags = getOrCreateTags(normalized.tags)
 
         existingDto.apply {
             title = normalized.title
@@ -122,18 +127,35 @@ class TaskService(
             weight = normalized.weight
 
             tags.clear()
-            tags.addAll(getOrCreateTags(normalized.tags))
+            tags.addAll(newTags)
         }
 
-        return taskRepository.save(existingDto).toTask()
+        val saved = taskRepository.saveAndFlush(existingDto)
+        cleanupOrphanTags(previousTags - newTags)
+        return saved.toTask()
     }
 
     @CacheEvict(value = ["tasks", "tasksByDate"], allEntries = true)
+    @Transactional
     fun deleteTask(id: Long) {
-        if (!taskRepository.existsById(id)) {
-            throw NoSuchElementException("Task not found with id: $id")
-        }
-        taskRepository.deleteById(id)
+        val dto = taskRepository.findById(id)
+            .orElseThrow { NoSuchElementException("Task not found with id: $id") }
+
+        val tagsToCheck = dto.tags.toSet()
+
+        taskRepository.delete(dto)
+        taskRepository.flush()
+
+        cleanupOrphanTags(tagsToCheck)
+    }
+
+    private fun cleanupOrphanTags(tags: Set<TagDto>) {
+        // If after updating/deleting a task a tag is not referenced by any tasks anymore — delete it.
+        tags.asSequence()
+            .mapNotNull { it.id }
+            .distinct()
+            .filter { tagId -> !taskRepository.existsByTagsId(tagId) }
+            .forEach { orphanTagId -> tagRepository.deleteById(orphanTagId) }
     }
 
     @Scheduled(cron = "0 0 0 * * *", zone = "Europe/Moscow")

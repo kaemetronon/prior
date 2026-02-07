@@ -16,4 +16,6 @@ interface TaskRepository : JpaRepository<TaskDto, Long> {
 
     @Cacheable(value = ["tasks"], key = "'completed_' + #completed + '_date_' + #date.toString()")
     fun findByCompletedAndDateBefore(completed: Boolean, date: LocalDate): List<TaskDto>
+
+    fun existsByTagsId(tagId: Long): Boolean
 }
