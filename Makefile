@@ -4,28 +4,28 @@ update-repo:
 	git pull
 
 down:
-	docker-compose down --rmi all --volumes --remove-orphans
+	docker compose down --rmi all --volumes --remove-orphans
 
 up:
 	make update-repo
 	make down
-	docker-compose up --build -d
+	docker compose up --build -d
 
 backend:
 	make update-repo
-	docker-compose stop backend || true
-	docker-compose rm -f backend || true
+	docker compose stop backend || true
+	docker compose rm -f backend || true
 	docker rmi priority-backend:latest || true
-	docker-compose up --build -d backend
+	docker compose up --build -d backend
 
 frontend:
 	make update-repo
-	docker-compose stop frontend || true
-	docker-compose rm -f frontend || true
+	docker compose stop frontend || true
+	docker compose rm -f frontend || true
 	docker rmi priority-frontend:latest || true
-	docker-compose up --build -d frontend
+	docker compose up --build -d frontend
 
 postgres:
 	make update-repo
-	docker-compose rm -f postgres || true
-	docker-compose up --build -d postgres 
+	docker compose rm -f postgres || true
+	docker compose up --build -d postgres 
