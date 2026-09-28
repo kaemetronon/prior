@@ -20,13 +20,25 @@
    Без домена Let's Encrypt не выдаёт и не продлевает сертификаты (для IP это
    невозможно в принципе), поэтому certbot просто падал бы в цикле.
 
-## Что нужно поменять руками на сервере (не в репозитории)
+4. **`.github/workflows/ci.yml`** — из команды деплоя убран `certbot`
+   (`docker-compose up -d nginx certbot` → `docker-compose up -d nginx`),
+   т.к. сервис `certbot` закомментирован в `docker-compose.yml` и команда
+   падала бы с `no such service: certbot`.
 
-4. **`env/backend.env`** (в `.gitignore`, хранится только на сервере) —
+## Что нужно поменять руками вне репозитория
+
+5. **`env/backend.env`** на сервере (в `.gitignore`, в репозитории его нет) —
    переменная `CORS_ORIGINS` должна содержать Origin, с которого реально
    открывают фронт. Сейчас нужно выставить туда `http://<IP_СЕРВЕРА>`
    (без пути, без слэша на конце). Если открываете фронт не с порта 80 —
    добавить и его, например `http://<IP>:8081`.
+6. **GitHub Actions → Settings → Secrets and variables → Actions → Variables
+   → `PRIOR_HOST`** — скорее всего до сих пор указывает на старый домен
+   `prior.ariyo.ru`. Домен больше не ваш, DNS по нему ведёт неизвестно куда —
+   именно поэтому деплой падает с `ssh: handshake failed` (раннер стучится не
+   туда). Нужно поменять значение на реальный IP сервера. Заодно проверить
+   `PRIOR_USER` и secret `PRIOR_SSH_SECRET` — ключ должен быть тем же, что
+   стоит в `~/.ssh/authorized_keys` на сервере.
 
 ## Как вернуть домен + HTTPS
 
@@ -49,3 +61,8 @@
    `/api` — менять не нужно, он не завязан на домен.
 6. `env/backend.env`: обновить `CORS_ORIGINS` на `https://<новый_домен>`
    (именно `https`, без пути и слэша на конце).
+7. `.github/workflows/ci.yml`: если решите вернуть certbot в автодеплой —
+   вернуть `docker-compose up -d nginx certbot` (сначала раскомментировав
+   сервис `certbot` в `docker-compose.yml`, см. пункт 3 выше).
+8. GitHub Actions variable `PRIOR_HOST`: при смене IP/хоста сервера — обновить
+   значение на актуальный домен/IP.
